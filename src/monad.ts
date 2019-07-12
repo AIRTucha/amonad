@@ -1,56 +1,99 @@
-import { isFunction } from "util"
+import { Thenable, isThenable } from './Thenable'
 
+/**
+ * Container of with a fallback value
+ */
+interface Gettable<T, E> {
+    /**
+     * @returns Object of type T if available, object of type E as fallback
+     */
+    get(): T | E
+    /**
+     * @param value Fallback value in case T is not available
+     * @return Stored value of T or a provided fallback
+     */
+    getOrElse( value: T ): T
+}
 
-const lift = (value: any, obj: any): any =>
-    new (obj as any).constructor( value )
+/**
+ * @param obj Object of type which has to be constructed
+ * @param args Arguments fo the constructor
+ * @returns New object of the same type
+ */
+const construct = (obj: any, ...args: any[]): any =>
+    new (obj as any).constructor( ...args )
 
-export const isPromiseLike = <T>(obj: any): obj is PromiseLike<T> => isFunction(obj.then)
+/**
+ * Attach interface to type T if it has bind() or indicate inability turn creat monadic type via *never*
+ */
+export type Monadic<T, B> = B extends { bind: (...args: any[]) => any } ? T & B : never
 
-export function monad<T extends {new(...args: any[]): {}}>(constructor: T) {
+/**
+ * Decorator reference then from bind to complete monadic API
+ * @param constructor Constructor of PromiseLike object
+ * @returns Constructor of monadic object
+ */
+export function monad<T extends {new(...args: any[]): Thenable<any> }>(constructor: T) {
     return class extends constructor {
         bind = constructor.prototype.then
     }
 }
 
-export abstract class CJustSuccess<T> implements PromiseLike<T> {
+/**
+ * Container which might represent primary value, base for Just and Success
+ */
+export abstract class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> {
+    /**
+     * @param v Primary stored value
+     */
     constructor( private v: T ) { }
+
     then<TResult1 = T, TResult2 = never>(
-        onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-        onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
-    ): PromiseLike<TResult1 | TResult2> {
+        onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
+        onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
+    ): Thenable<TResult1 | TResult2> {
         if ( onfulfilled ) {
             const value = onfulfilled( this.v )
-            return isPromiseLike( value ) ? value : lift( value, this )
+            return isThenable( value ) ? value : construct( this, value )
         }
         else
             return this as any
     }
+
     get(): T {
         return this.v
     }
+
     getOrElse( value: T ): T {
         return this.v
     }
 }
 
-export class CNoneFailure<T, E> implements PromiseLike<T> {
+/**
+ * Container which might represent secondary value, base for None and Failure
+ */
+export class CNoneFailure<T, E> implements Thenable<T>, Gettable<T, E> {
+    /**
+     * @param v Secondary stored value
+     */
     constructor( protected v: E ) { }
+
     then<TResult1 = T, TResult2 = never>(
-        onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-        onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
-    ): PromiseLike<TResult1 | TResult2> {
+        onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
+        onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
+    ): Thenable<TResult1 | TResult2> {
         if (onrejected) {
             const value = onrejected(this.v)
-            return isPromiseLike<any>(value) ? value : lift( value, this )
+            return isThenable<any>(value) ? value : construct( this, value )
         } else
             return this as any
     }
+
     getOrElse( value: T ): T {
         return value
     }
-    get(): undefined {
-        return undefined
+
+    get()  {
+        return this.v
     }
 }
-
-export type ToMonad<T, B> = B extends { bind: (...args: any[]) => any } ? T & B : never
