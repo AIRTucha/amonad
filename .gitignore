@@ -3,7 +3,6 @@
 coverage/
 dist/
 node_modules/
-.travis.yml
 *.log
 .idea
 package-lock.json
