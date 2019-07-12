@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 
-import { isThenable } from "./Thenable"
+import { isThenable } from "./thenable"
 import { Just, None } from './maybe'
 import { Success, Failure } from './result'
 
