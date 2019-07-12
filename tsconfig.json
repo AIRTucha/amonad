@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "noEmitHelpers": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "pretty": true,
+    "declaration": true,
+    "importHelpers": true
+  },
+  "compileOnSave": true,
+  "buildOnSave": true,
+  "files": [ "./src/index.ts"],
+  "exclude": [
+    "**/*.spec.ts",
+    "dist",
+    "node_modules"
+  ]
+}
