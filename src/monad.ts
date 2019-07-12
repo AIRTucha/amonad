@@ -1,4 +1,4 @@
-import { Thenable, isThenable } from './Thenable'
+import { Thenable, isThenable } from './thenable'
 
 /**
  * Container of with a fallback value

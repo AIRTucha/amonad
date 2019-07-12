@@ -1,6 +1,6 @@
 
 import { CJustSuccess, CNoneFailure, monad, Monadic } from "./monad"
-import { Thenable } from './Thenable'
+import { Thenable } from './thenable'
 
 /**
  * Define properties specific to Maybe monad
