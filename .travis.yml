@@ -7,10 +7,11 @@ install:
 
 jobs:
   include:
-    - stage: testing
-      script: npm run test:ci
     - stage: lint
       script: npm run lint
     - stage: build
       script: npm run build
+    - stage: testing
+      script: npm run test:ci
+
 
