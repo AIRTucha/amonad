@@ -33,7 +33,7 @@ const testString2 = "test2"
 
 const mapNumbersToNumber = (v: number) => v + testNumber2
 const mapNumberToString = (v: number) => v + testString1
-const mapStringToString = (v: string) => v + testNumber2
+const mapStringToString = (v: string) => v + testString2
 
 
 describe('Base class for Just and Success', () => {
@@ -165,7 +165,6 @@ describe('Base class for Just and Success', () => {
 
         })
     })
-
 })
 
 describe('CNoneFailure', () => {
@@ -294,6 +293,137 @@ describe('CNoneFailure', () => {
                     expect( result.get())
                         .to
                         .eql(mapStringToString(testString1))
+                })
+            })
+        })
+    })
+})
+
+describe("await", () => {
+    describe("CJustSuccess", () => {
+
+        it("function correctly", async () => {
+            const value = await new CJustSuccessTest(testNumber1)
+            expect(value).to.be.eql(testNumber1)
+        })
+
+        it("with CNoneFailure", async () => {
+            try {
+                const svalue = await new CJustSuccessTest(testNumber1)
+                const fvalue = await new CNoneFailureTest(testString1)
+                throw "The line should not be reached"
+            } catch (e) {
+                expect(e).to.be.eql(testString1)
+            }
+        })
+
+        describe("Promise", () => {
+            describe("resolved", () => {
+
+                it("before", async () => {
+                    const pValue = await Promise.resolve(testNumber1)
+                    const value = await new CJustSuccessTest(testNumber2)
+                    expect(pValue).to.be.eql(testNumber1)
+                    expect(value).to.be.eql(testNumber2)
+                })
+
+                it("after", async () => {
+                    const value = await new CJustSuccessTest(testNumber2)
+                    const pValue = await Promise.resolve(testNumber1)
+                    expect(pValue).to.be.eql(testNumber1)
+                    expect(value).to.be.eql(testNumber2)
+                })
+            })
+            describe("rejected", () => {
+
+                it("before", async () => {
+                    try {
+                        const pValue = await Promise.reject(testNumber1)
+                        const value = await new CJustSuccessTest(testNumber2)
+                        throw "The line should not be reached"
+                    } catch (e) {
+                        expect(e).to.be.eql(testNumber1)
+                    }
+                })
+
+                it("after", async () => {
+                    try {
+                        const value = await new CJustSuccessTest(testString1)
+                        const pValue = await Promise.reject(testNumber1)
+                        throw "The line should not be reached"
+                    } catch (e) {
+                        expect(e).to.be.eql(testNumber1)
+                    }
+                })
+            })
+        })
+
+    })
+
+    describe("CNoneFailure", () => {
+
+        it("throws value", async () => {
+            try {
+                await new CNoneFailureTest(testString1)
+                throw "The line should not be reached"
+            } catch (e) {
+                expect(e).to.be.eql(testString1)
+            }
+        })
+
+        it("with CJustSuccess", async () => {
+            try {
+                const fvalue = await new CNoneFailureTest(testString1)
+                const svalue = await new CJustSuccessTest(testNumber1)
+                throw "The line should not be reached"
+            } catch (e) {
+                expect(e).to.be.eql(testString1)
+            }
+        })
+
+        describe("Promise", () => {
+            describe("resolved", () => {
+
+                it("before", async () => {
+                    try {
+                        const value = await new CNoneFailureTest(testNumber2)
+                        const pValue = await Promise.resolve(testNumber1)
+                        throw "The line should not be reached"
+                    } catch (e) {
+                        expect(e).to.be.eql(testNumber2)
+                    }
+                })
+
+                it("after", async () => {
+                    try {
+                        const pValue = await Promise.resolve(testNumber1)
+                        const value = await new CNoneFailureTest(testNumber2)
+                        throw "The line should not be reached"
+                    } catch (e) {
+                        expect(e).to.be.eql(testNumber2)
+                    }
+                })
+            })
+            describe("rejected", () => {
+
+                it("before", async () => {
+                    try {
+                        const pValue = await Promise.reject(testNumber1)
+                        const value = await new CNoneFailureTest(testNumber2)
+                        throw "The line should not be reached"
+                    } catch (e) {
+                        expect(e).to.be.eql(testNumber1)
+                    }
+                })
+
+                it("after", async () => {
+                    try {
+                        const value = await new CNoneFailureTest(testString1)
+                        const pValue = await Promise.reject(testNumber1)
+                        throw "The line should not be reached"
+                    } catch (e) {
+                        expect(e).to.be.eql(testString1)
+                    }
                 })
             })
         })
