@@ -1,6 +1,6 @@
 {
   "name": "amonad",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Experimental implementation of Maybe and Result monads compatible with await.",
   "main": "./dist/index.js",
   "scripts": {
@@ -65,5 +65,8 @@
     "ts-node": "^8.2.0",
     "tslint": "^5.17.0",
     "typescript": "^3.5.1"
+  },
+  "dependencies": {
+    "tslib": "^1.9.3"
   }
 }
