@@ -1,6 +1,5 @@
 import { CJustSuccess, CNoneFailure, monad } from './monad'
 import { expect } from 'chai'
-import { stringify } from 'querystring'
 
 // *** Test logic of abstract CJustSuccess and CNoneFailure classes via local implementations ***
 
