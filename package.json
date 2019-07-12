@@ -1,5 +1,5 @@
 {
-  "name": "await-monad",
+  "name": "amonad",
   "version": "0.0.1",
   "description": "Experimental project for await compatible Maybe and Result monads.",
   "main": "./dist/index.js",
@@ -14,7 +14,7 @@
     "test:ci": "nyc npm run test:once && nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
-    "url": "https://github.com/AIRTucha/await-monad"
+    "url": "https://github.com/AIRTucha/amonad"
   },
   "keywords": [
     "typescript",
