@@ -15,7 +15,7 @@ jobs:
       script: npm run lint
     - stage: build
       script: npm run build
-    - stage: testing
+    - stage: test
       script: npm run test:ci
 
 
