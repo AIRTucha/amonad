@@ -10,18 +10,18 @@ type TestMonad<T, E> = CJustSuccessTest<T, E> | CNoneFailureTest<T, E>
 
 @monad
 class CJustSuccessTest<T, E> extends CJustSuccess<T, E> {
-    bind!: <TResult1 = T, TResult2 = never>(
-        onfulfilled?: ((value: T) => TResult1 | TestMonad<TResult1, E>) | undefined | null,
-        onrejected?: ((reason: any) => TResult2 | TestMonad<TResult2, E>) | undefined | null
-    ) => TestMonad<TResult1 | TResult2, E>
+    bind!: <TResult1 = T, EResult1 = E, TResult2 = never, EResult2 = never>(
+        onfulfilled?: ((value: T) => TResult1 | TestMonad<TResult1, EResult1>) | undefined | null,
+        onrejected?: ((reason: any) => TResult2 | TestMonad<TResult2, EResult2>) | undefined | null
+    ) => TestMonad<TResult1 | TResult2, EResult1 | EResult2>
 }
 
 @monad
 class CNoneFailureTest<T, E> extends CNoneFailure<T, E> {
-    bind!: <TResult1 = T, TResult2 = never>(
-        onfulfilled?: ((value: T) => TResult1 | TestMonad<TResult1, E>) | undefined | null,
-        onrejected?: ((reason: any) => TResult2 | TestMonad<TResult2, E>) | undefined | null
-    ) => TestMonad<TResult1 | TResult2, E>
+    bind!: <TResult1 = T, EResult1 = E, TResult2 = never, EResult2 = never>(
+        onfulfilled?: ((value: T) => TResult1 | TestMonad<TResult1, EResult1>) | undefined | null,
+        onrejected?: ((reason: any) => TResult2 | TestMonad<TResult2, EResult2>) | undefined | null
+    ) => TestMonad<TResult1 | TResult2, EResult1 | EResult2>
 }
 
 const testNumber1 = 1

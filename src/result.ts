@@ -1,6 +1,8 @@
 
-import { CJustSuccess, CNoneFailure, monad, Monadic } from "./monad"
+import { CJustSuccess, CNoneFailure, monad } from "./monad"
 import { Thenable } from './thenable'
+
+const bindErrorMsg = "Result.bind() is should be full filled by monad decorator."
 
 /**
  * Values which might represent an Error
@@ -14,6 +16,16 @@ export type Throwable = Error | string
  */
 interface IResult<T, E extends Throwable> extends Thenable<T> {
     /**
+     * Accordingly apply the handlers produces a new Result as container for produced output
+     * @param onJust Handler for fulfilled value
+     * @param onNone Handler for onrejected value
+     * @return Result object which inclose new value
+     */
+    bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
+        onSuccess?: ((value: T) => TResult1 | IResult<TResult1, EResult1>) | undefined | null,
+        onFailure?: ((reason: E) => EResult1 | IResult<TResult2, EResult2>) | undefined | null
+    ): Result<TResult1 | TResult2, EResult1 | EResult2>
+    /**
      * @returns Wether this is Failure
      */
     isFailure(): this is Failure<T, E>
@@ -23,11 +35,19 @@ interface IResult<T, E extends Throwable> extends Thenable<T> {
     isSuccess(): this is Success<T, E>
 }
 
+
 /**
  * Container which represents result of successful computation
  */
 @monad
 class CSuccess<T, E extends Throwable> extends CJustSuccess<T, E> implements IResult<T, E> {
+
+    bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
+        onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | undefined | null,
+        onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | undefined | null
+    ): Result<TResult1 | TResult2, EResult1 | EResult2> {
+        throw new Error( bindErrorMsg )
+    }
 
     isFailure(): this is Failure<T, E> {
         return false
@@ -44,6 +64,13 @@ class CSuccess<T, E extends Throwable> extends CJustSuccess<T, E> implements IRe
 @monad
 class CFailure<T, E extends Throwable> extends CNoneFailure<T, E> implements IResult<T, E> {
 
+    bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
+        onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | undefined | null,
+        onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | undefined | null
+    ): Result<TResult1 | TResult2, EResult1 | EResult2> {
+        throw new Error( bindErrorMsg )
+    }
+
     isFailure(): this is Failure<T, E> {
         return true
     }
@@ -54,24 +81,14 @@ class CFailure<T, E extends Throwable> extends CNoneFailure<T, E> implements IRe
 }
 
 /**
- * Defined a bind() specific for Result
- */
-interface Bindable<T, E extends Throwable> {
-    bind<T, TResult1 = T, TResult2 = never>(
-        onSuccess?: ((value: T) => TResult1 | Result<TResult1, E>) | undefined | null,
-        onFailure?: ((reason: any) => TResult2 | Result<TResult2, E>) | undefined | null
-    ): Result<TResult1 | TResult2, E>
-}
-
-/**
  * Represents a result of successful computation
  */
-export type Success<T, E extends Throwable> = Monadic<CSuccess<T, E>, Bindable<T, E>>
+export type Success<T, E extends Throwable> = CSuccess<T, E>
 
 /**
  * Represents an Error occurred in during execution
  */
-export type Failure<T, E extends Throwable> = CFailure<T, E> & Bindable<T, E>
+export type Failure<T, E extends Throwable> = CFailure<T, E>
 
 /**
  * Represents a result of computation which can potentially fail

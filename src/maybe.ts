@@ -1,6 +1,8 @@
 
-import { CJustSuccess, CNoneFailure, monad, Monadic } from "./monad"
+import { CJustSuccess, CNoneFailure, monad } from "./monad"
 import { Thenable } from './thenable'
+
+const bindErrorMsg = "Maybe.bind() is should be full filled by monad decorator."
 
 /**
  * Define properties specific to Maybe monad
@@ -8,6 +10,16 @@ import { Thenable } from './thenable'
  * @note Bind is not defined, since it is attached by decorator
  */
 interface IMaybe<T> extends Thenable<T> {
+    /**
+     * Accordingly apply the handlers produces a new Maybe as container for produced output
+     * @param onJust Handler for fulfilled value
+     * @param onNone Handler for onrejected value
+     * @return Maybe object which inclose new value
+     */
+    bind<TResult1 =  T, TResult2 = never>(
+        onJust?: ((value: T) => TResult1 | IMaybe<TResult1>) | undefined | null,
+        onNone?: (() => TResult2 | IMaybe<TResult2>) | undefined | null
+    ): Maybe<TResult1 | TResult2>
     /**
      * @returns Wether this is None
      */
@@ -23,6 +35,13 @@ interface IMaybe<T> extends Thenable<T> {
  */
 @monad
 class CJust<T> extends CJustSuccess<T, undefined> implements IMaybe<T> {
+
+    bind<TResult1 =  T, TResult2 = never>(
+        onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | undefined | null,
+        onNone?: (() => TResult2 | Maybe<TResult2>) | undefined | null
+    ): Maybe<TResult1 | TResult2> {
+        throw new Error( bindErrorMsg )
+    }
 
     isNone(): this is None<T> {
         return false
@@ -42,6 +61,13 @@ class CNone<T> extends CNoneFailure<T, undefined> implements IMaybe<T> {
         super(undefined)
     }
 
+    bind<TResult1 =  T, TResult2 = never>(
+        onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | undefined | null,
+        onNone?: (() => TResult2 | Maybe<TResult2>) | undefined | null
+    ): Maybe<TResult1 | TResult2> {
+        throw new Error( bindErrorMsg )
+    }
+
     isNone(): this is None<T> {
         return true
     }
@@ -52,24 +78,14 @@ class CNone<T> extends CNoneFailure<T, undefined> implements IMaybe<T> {
 }
 
 /**
- * Defined a bind() specific for Maybe
- */
-interface Bindable<T> {
-    bind<T, TResult1 = T, TResult2 = never>(
-        onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | undefined | null,
-        onNone?: (() => TResult2 | Maybe<TResult2>) | undefined | null
-    ): Maybe<TResult1 | TResult2>
-}
-
-/**
  * Representation of a value
  */
-export type Just<T> = Monadic<CJust<T>, Bindable<T>>
+export type Just<T> = CJust<T>
 
 /**
  * Representation of an absent value
  */
-export type None<T> = Monadic<CNone<T>, Bindable<T>>
+export type None<T> = CNone<T>
 
 /**
  * Representation of a value which might not exist
