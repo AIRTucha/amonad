@@ -212,8 +212,38 @@ Result<T, E>.prototype.isFailure(): obj is Failure<T>
 
 ## Contribution guidelines
 
+The project is based on *npm* eco-system. Therefore development process is organized via *npm* scripts.
 
+For installation of dependencies run
 
+    npm install
 
+Build application once
 
+    npm run build
 
+Build application and watch for changes of files
+
+    npm run build:w
+
+Run tslint one time for CI
+
+    npm run lint
+
+Unit tests in a watching mode are performed by 
+
+    npm run test
+    
+A single run of test suit
+
+    npm run test:once
+
+A single run of test suit with test coverage report
+
+    npm run cover
+
+A single run of test suit with test coverage report
+
+    npm run test:ci
+
+Everybody is welcome to contribute and submit pull requests. Please communicate your ideas and suggestions via *issues*.
