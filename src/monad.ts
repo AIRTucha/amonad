@@ -28,11 +28,10 @@ const construct = (obj: any, ...args: any[]): any =>
  * @param constructor Constructor of PromiseLike object
  * @returns Constructor of monadic object
  */
-export function monad<T extends {new(...args: any[]): Thenable<any> }>(constructor: T): T & { ok: string } {
-    return class Bindable extends constructor {
+export function monad<T extends {new(...args: any[]): Thenable<any> }>(constructor: T) {
+    return class extends constructor {
         bind = constructor.prototype.then
-        ok = "string"
-    } as any
+    }
 }
 
 /**
