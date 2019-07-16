@@ -122,7 +122,7 @@ Just<T>(value: T) => Maybe<T>
 
 #### None
 
-Represents a absents of a value with specified type. It can be created via a factory with specified type.
+Represents an absents of a value with specified type. It can be created via a factory with specified type.
 
 ```typescript
 None<T>() => Maybe<T> 
@@ -139,7 +139,7 @@ isJust<T>(obj: any): obj is Just<T>
 Moreover *Maybe* has a method dedicated to the same goal.
 
 ```typescript
-Maybe<T>.prototype.isJust<T>(): obj is Just<T>
+Maybe<T>.prototype.isJust(): obj is Just<T>
 ```
 
 #### isNone
@@ -153,16 +153,66 @@ isNone<T>(obj: any): obj is None<T>
 Moreover *Maybe* has a method dedicated to the same goal.
 
 ```typescript
-Maybe<T>.prototype.isNone<T>(): obj is Just<T>
+Maybe<T>.prototype.isNone(): obj is Just<T>
 ```
 
+### Result
 
+*Result<T, E>* itself represents a union type of Success<T, E> and Failure<T, E>.
 
+It is also a *smart factory* which calls provided function and stores its output as *Success<T, E>* or *Failure<T, E>* accordingly.
 
+```typescript
+Maybe<T, E extends Throwable>(action: () => T | Result<T, E>) => Result<T, E>
+```
 
+#### Success
 
+Represents a value of specified type. It can be created via a factory which wraps the value with *Success<T, E>*
+
+```typescript
+Success<T, E extends Throwable>(value: T) => Result<T, E>
+```
+
+#### Failure
+
+Represents an error which explains an absents of a value. It can be created via a factory with specified type.
+
+```typescript
+Failure<T, E extends Throwable>(error: E) => Result<T, E>
+```
+
+#### isSuccess
+
+It exists as a stand alone function which checks wether object of any type is *Success*
+
+```typescript
+isSuccess<T>(obj: any): obj is Success<T>
+```
+
+Moreover *Result* has a method dedicated to the same goal.
+
+```typescript
+Result<T, E>.prototype.isSuccess(): obj is Success<T, E>
+```
+
+#### isFailure
+
+It exists as a stand alone function which checks wether object of any type is *Failure*
+
+```typescript
+isFailure<T, E>(obj: any): obj is Failure<T, E>
+```
+
+Moreover *Result* has a method dedicated to the same goal.
+
+```typescript
+Result<T, E>.prototype.isFailure(): obj is Failure<T>
+```
 
 ## Contribution guidelines
+
+
 
 
 
