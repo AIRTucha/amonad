@@ -1,11 +1,12 @@
 {
   "name": "amonad",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "Experimental implementation of Maybe and Result monads compatible with await.",
   "main": "./dist/index.js",
   "scripts": {
     "prepack": "npm run build",
     "clean": "rm -rf ./dist",
+    "release": "npm publish --access public",
     "build": "npm run clean && tsc -p tsconfig.json",
     "build:w": "tsc -p tsconfig.json -w",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",

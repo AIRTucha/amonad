@@ -24,19 +24,15 @@ const construct = (obj: any, ...args: any[]): any =>
     new (obj as any).constructor( ...args )
 
 /**
- * Attach interface to type T if it has bind() or indicate inability turn creat monadic type via *never*
- */
-export type Monadic<T, B> = B extends { bind: (...args: any[]) => any } ? T & B : never
-
-/**
  * Decorator reference then from bind to complete monadic API
  * @param constructor Constructor of PromiseLike object
  * @returns Constructor of monadic object
  */
-export function monad<T extends {new(...args: any[]): Thenable<any> }>(constructor: T) {
-    return class extends constructor {
+export function monad<T extends {new(...args: any[]): Thenable<any> }>(constructor: T): T & { ok: string } {
+    return class Bindable extends constructor {
         bind = constructor.prototype.then
-    }
+        ok = "string"
+    } as any
 }
 
 /**
