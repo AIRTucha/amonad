@@ -62,11 +62,12 @@ Implementation of PromiseLike.then() for proper functioning of await
 
 **return** *PromiseLike* object which inclose new value
      
-    Monad<T>.prototype.then<TResult1 = T, TResult2 = never>(
-        onfulfilled?: ( ( value: T ) => TResult1 | PromiseLike<TResult1> ) | undefined | null,
-        onrejected?: ( ( reason: any ) => TResult2 | PromiseLike<TResult2> ) | undefined | null
-    ): PromiseLike<TResult1 | TResult2>
-
+```typescript
+Monad<T>.prototype.then<TResult1 = T, TResult2 = never>(
+    onfulfilled?: ( ( value: T ) => TResult1 | PromiseLike<TResult1> ) | undefined | null,
+    onrejected?: ( ( reason: any ) => TResult2 | PromiseLike<TResult2> ) | undefined | null
+): PromiseLike<TResult1 | TResult2>
+```
 It is internally utilized by *bind()*.
 
 #### Monad.prototype.get()
@@ -75,11 +76,15 @@ Returns the value inclosed inside container.
 
 Signature for *Maybe* is:
 
-    Maybe<T>.prototype.get(): T | undefined
+```typescript
+Maybe<T>.prototype.get(): T | undefined
+```
 
 Signature for *Result* is:
 
-    Result<T, E>.prototype.get(): T | E
+```typescript
+Result<T, E>.prototype.get(): T | E
+```
 
 #### Monad.prototype.getOrElse()
 
@@ -87,43 +92,69 @@ Returns the inclosed primary value or the one provided as an argument.
 
 Signature for *Maybe* is:
 
-    Maybe<T>.prototype.getOrElse( value: T): T 
+```typescript
+Maybe<T>.prototype.getOrElse( value: T): T 
+```
 
 Signature for *Result* is:
 
-    Result<T, E>.prototype.getOrElse( value: T): T  
+```typescript
+Result<T, E>.prototype.getOrElse( value: T): T  
+```
 
-### Maybe<T>
+### Maybe
 
-Maybe<T> itself represents a union type of Just<T> and None<T>.
-
-#### Maybe<T>(value: T | undefined | null) => Maybe<T>
+*Maybe<T>* itself represents a union type of Just<T> and None<T>.
 
 It is also a *smart factory* which turns Nullable object to *Just<T>* or *None<T>* accordingly.
 
-#### Just<T>
+```typescript
+Maybe<T>(value: T | undefined | null) => Maybe<T>
+```
 
-Represents a value of specified type.
+#### Just
 
-#### Just<T>(value: T) => Maybe<T> 
+Represents a value of specified type. It can be created via a factory which wraps the value with *Just<T>*
 
-Wraps a value with *Just<T>*
+```typescript
+Just<T>(value: T) => Maybe<T> 
+```
 
-#### None<T>
+#### None
 
-Represents a absents of a value with specified type.
+Represents a absents of a value with specified type. It can be created via a factory with specified type.
 
-#### None<T>() => Maybe<T> 
+```typescript
+None<T>() => Maybe<T> 
+```
 
-Creates None of specified type.
+#### isJust
 
-#### isJust<T>(obj: any): obj is Just<T>
+It exists as a stand alone function which checks wether object of any type is *Just*
 
-Checks wether object of any type is *Just*
+```typescript
+isJust<T>(obj: any): obj is Just<T>
+```
 
-#### isNone<T>(obj: any): obj is Just<T>
+Moreover *Maybe* has a method dedicated to the same goal.
 
-Checks wether object of any type is *None*
+```typescript
+Maybe<T>.prototype.isJust<T>(): obj is Just<T>
+```
+
+#### isNone
+
+It exists as a stand alone function which checks wether object of any type is *None*
+
+```typescript
+isNone<T>(obj: any): obj is None<T>
+```
+
+Moreover *Maybe* has a method dedicated to the same goal.
+
+```typescript
+Maybe<T>.prototype.isNone<T>(): obj is Just<T>
+```
 
 
 
