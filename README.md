@@ -135,4 +135,3 @@ Checks wether object of any type is *None*
 
 
 
-

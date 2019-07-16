@@ -1,4 +1,3 @@
-
 import { CJustSuccess, CNoneFailure, monad } from "./monad"
 import { Thenable } from './thenable'
 
