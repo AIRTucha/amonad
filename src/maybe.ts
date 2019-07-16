@@ -11,7 +11,7 @@ const bindErrorMsg = "Maybe.bind() is should be full filled by monad decorator."
  */
 interface IMaybe<T> extends Thenable<T> {
     /**
-     * Accordingly apply the handlers produces a new Maybe as container for produced output
+     * Accordingly apply the handlers produces a new Maybe as container for the output of called function
      * @param onJust Handler for fulfilled value
      * @param onNone Handler for onrejected value
      * @return Maybe object which inclose new value
