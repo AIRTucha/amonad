@@ -24,7 +24,16 @@
     "monad",
     "await",
     "maybe",
-    "option"
+    "option",
+    "fp",
+    "await",
+    "async",
+    "async-await",
+    "functional-programming",
+    "error-handling",
+    "result",
+    "try",
+    "monadic"
   ],
   "author": {
     "name": "Alex T",
