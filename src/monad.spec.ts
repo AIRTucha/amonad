@@ -1,5 +1,6 @@
-import { CJustSuccess, CNoneFailure, monad } from './monad'
+import { CJustSuccess, CNoneFailure, monad, fulfilled, rejected } from './monad'
 import { expect } from 'chai'
+import { strict } from 'assert'
 
 // *** Test logic of abstract CJustSuccess and CNoneFailure classes via local implementations ***
 
@@ -8,7 +9,9 @@ import { expect } from 'chai'
  */
 type TestMonad<T, E> = CJustSuccessTest<T, E> | CNoneFailureTest<T, E>
 
-@monad
+const isMonad = (v: any) => v instanceof CJustSuccessTest || v instanceof CNoneFailureTest
+
+@fulfilled("bind", isMonad)
 class CJustSuccessTest<T, E> extends CJustSuccess<T, E> {
     bind!: <TResult1 = T, EResult1 = E, TResult2 = never, EResult2 = never>(
         onfulfilled?: ((value: T) => TResult1 | TestMonad<TResult1, EResult1>) | undefined | null,
@@ -16,7 +19,7 @@ class CJustSuccessTest<T, E> extends CJustSuccess<T, E> {
     ) => TestMonad<TResult1 | TResult2, EResult1 | EResult2>
 }
 
-@monad
+@rejected("bind", isMonad)
 class CNoneFailureTest<T, E> extends CNoneFailure<T, E> {
     bind!: <TResult1 = T, EResult1 = E, TResult2 = never, EResult2 = never>(
         onfulfilled?: ((value: T) => TResult1 | TestMonad<TResult1, EResult1>) | undefined | null,
@@ -96,6 +99,20 @@ describe('Base class for Just and Success', () => {
                         .to
                         .eql(mapNumberToString(testNumber1))
                 })
+
+                it('an different type', () => {
+                    const result = new CJustSuccessTest<number, never>(testNumber1)
+                            .bind( value => Promise.resolve(mapNumberToString(value)) )
+                    expect( result )
+                        .to
+                        .be
+                        .instanceOf(CJustSuccessTest)
+                    result.get().then( v => {
+                            expect( v )
+                            .to
+                            .eql( mapNumberToString(testNumber1) )
+                        })
+                })
             })
         })
 
@@ -151,6 +168,21 @@ describe('Base class for Just and Success', () => {
                             .bind(
                                 undefined,
                                 value => new CNoneFailureTest(mapNumberToString(value))
+                            )
+                    expect( result )
+                        .to
+                        .be
+                        .instanceOf(CJustSuccessTest)
+                    expect( result.get() )
+                        .to
+                        .eql(testString1)
+                })
+
+                it('an different type', () => {
+                    const result = new CJustSuccessTest(testString1)
+                            .bind(
+                                undefined,
+                                value => Promise.resolve(mapNumberToString(value))
                             )
                     expect( result )
                         .to
@@ -228,6 +260,18 @@ describe('CNoneFailure', () => {
                         .to
                         .eql(testString1)
                 })
+
+                it('an different type', () => {
+                    const result = new CNoneFailureTest<number, string>(testString1)
+                            .bind( value => Promise.resolve(mapNumbersToNumber(value)) )
+                    expect( result )
+                        .to
+                        .be
+                        .instanceOf(CNoneFailureTest)
+                    expect( result.get() )
+                        .to
+                        .eql(testString1)
+                })
             })
         })
 
@@ -292,6 +336,24 @@ describe('CNoneFailure', () => {
                     expect( result.get())
                         .to
                         .eql(mapStringToString(testString1))
+                })
+
+                it('an different monad', () => {
+                    const result = new CNoneFailureTest<string, string>(testString1)
+                            .bind<never, never, Promise<string>>(
+                                undefined,
+                                value => Promise.resolve(mapStringToString(value))
+                            )
+                    expect( result )
+                        .to
+                        .be
+                        .instanceOf(CNoneFailureTest)
+                    result.get().then( v => {
+                        expect( v )
+                            .to
+                            .eql(mapStringToString(testString1))
+                    })
+
                 })
             })
         })
