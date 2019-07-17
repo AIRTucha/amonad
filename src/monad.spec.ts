@@ -1,4 +1,4 @@
-import { CJustSuccess, CNoneFailure, monad, fulfilled, rejected } from './monad'
+import { CJustSuccess, CNoneFailure, fulfilled, rejected } from './monad'
 import { expect } from 'chai'
 import { strict } from 'assert'
 
