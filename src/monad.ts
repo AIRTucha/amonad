@@ -1,5 +1,7 @@
 import { Thenable, isThenable } from './thenable'
 
+const bindErrorMsg = "Maybe.bind() is should be full filled by monad decorator."
+
 /**
  * Container of with a fallback value
  */
@@ -16,28 +18,52 @@ interface Gettable<T, E> {
 }
 
 /**
- * @param obj Object of type which has to be constructed
- * @param args Arguments fo the constructor
- * @returns New object of the same type
+ * TODO: document quick fix
  */
-const construct = (obj: any, ...args: any[]): any =>
-    new (obj as any).constructor( ...args )
+export function fulfilled(name: string, isMonad: (value: any) => boolean ) {
+    return function<V extends {new(...args: any[]): Thenable<any> }>(constructor: V) {
+        constructor.prototype[name] = function<T, TResult1 = T, TResult2 = never>(
+            this: any,
+            onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
+            onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
+        ): Thenable<TResult1 | TResult2> {
+            if ( onfulfilled ) {
+                const value = onfulfilled( this.v )
+                return isMonad( value ) ? value : new constructor( value ) as any
+            }
+            else
+                return this as any
+        }
+        return constructor as any
+    }
+}
 
 /**
- * Decorator reference then from bind to complete monadic API
- * @param constructor Constructor of PromiseLike object
- * @returns Constructor of monadic object
+ * TODO: document quick fix
  */
-export function monad<T extends {new(...args: any[]): Thenable<any> }>(constructor: T) {
-    return class extends constructor {
-        bind = constructor.prototype.then
+export function rejected(name: string, isMonad: (value: any) => boolean ) {
+    return function<V extends {new(...args: any[]): Thenable<any> }>(constructor: V) {
+        constructor.prototype[name] = function<T, TResult1 = T, TResult2 = never>(
+            this: any,
+            onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
+            onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
+        ): Thenable<TResult1 | TResult2> {
+            if ( onrejected ) {
+                const value = onrejected( this.v )
+                return isMonad( value ) ? value : new constructor( value ) as any
+            }
+            else
+                return this as any
+        }
+        return constructor as any
     }
 }
 
 /**
  * Container which might represent primary value, base for Just and Success
  */
-export abstract class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> {
+@fulfilled("then", isThenable)
+export class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> {
     /**
      * @param v Primary stored value
      */
@@ -47,12 +73,7 @@ export abstract class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> 
         onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
         onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
     ): Thenable<TResult1 | TResult2> {
-        if ( onfulfilled ) {
-            const value = onfulfilled( this.v )
-            return isThenable( value ) ? value : construct( this, value )
-        }
-        else
-            return this as any
+        throw new Error(bindErrorMsg)
     }
 
     get(): T {
@@ -67,6 +88,7 @@ export abstract class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> 
 /**
  * Container which might represent secondary value, base for None and Failure
  */
+@rejected("then", isThenable)
 export class CNoneFailure<T, E> implements Thenable<T>, Gettable<T, E> {
     /**
      * @param v Secondary stored value
@@ -77,11 +99,7 @@ export class CNoneFailure<T, E> implements Thenable<T>, Gettable<T, E> {
         onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
         onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
     ): Thenable<TResult1 | TResult2> {
-        if (onrejected) {
-            const value = onrejected(this.v)
-            return isThenable<any>(value) ? value : construct( this, value )
-        } else
-            return this as any
+        throw new Error(bindErrorMsg)
     }
 
     getOrElse( value: T ): T {

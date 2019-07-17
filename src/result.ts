@@ -1,4 +1,4 @@
-import { CJustSuccess, CNoneFailure, monad } from "./monad"
+import { CJustSuccess, CNoneFailure, monad, fulfilled, rejected } from "./monad"
 import { Thenable } from './thenable'
 
 const bindErrorMsg = "Result.bind() is should be full filled by monad decorator."
@@ -32,51 +32,6 @@ interface IResult<T, E extends Throwable> extends Thenable<T> {
      * @returns Wether this is Success
      */
     isSuccess(): this is Success<T, E>
-}
-
-
-/**
- * Container which represents result of successful computation
- */
-@monad
-class CSuccess<T, E extends Throwable> extends CJustSuccess<T, E> implements IResult<T, E> {
-
-    bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
-        onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | undefined | null,
-        onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | undefined | null
-    ): Result<TResult1 | TResult2, EResult1 | EResult2> {
-        throw new Error( bindErrorMsg )
-    }
-
-    isFailure(): this is Failure<T, E> {
-        return false
-    }
-
-    isSuccess(): this is Success<T, E> {
-        return true
-    }
-}
-
-/**
- * Container which represents an Error occurred in during execution
- */
-@monad
-class CFailure<T, E extends Throwable> extends CNoneFailure<T, E> implements IResult<T, E> {
-
-    bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
-        onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | undefined | null,
-        onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | undefined | null
-    ): Result<TResult1 | TResult2, EResult1 | EResult2> {
-        throw new Error( bindErrorMsg )
-    }
-
-    isFailure(): this is Failure<T, E> {
-        return true
-    }
-
-    isSuccess(): this is Success<T, E> {
-        return false
-    }
 }
 
 /**
@@ -154,9 +109,46 @@ export const isSuccess =
     <T, E extends Throwable>(obj: any): obj is Success<T, E> =>
         obj instanceof CSuccess
 
+/**
+ * Container which represents result of successful computation
+ */
+@fulfilled("bind", isResult)
+class CSuccess<T, E extends Throwable> extends CJustSuccess<T, E> implements IResult<T, E> {
 
+    bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
+        onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | undefined | null,
+        onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | undefined | null
+    ): Result<TResult1 | TResult2, EResult1 | EResult2> {
+        throw new Error( bindErrorMsg )
+    }
 
+    isFailure(): this is Failure<T, E> {
+        return false
+    }
 
+    isSuccess(): this is Success<T, E> {
+        return true
+    }
+}
 
+/**
+ * Container which represents an Error occurred in during execution
+ */
+@rejected("bind", isResult)
+class CFailure<T, E extends Throwable> extends CNoneFailure<T, E> implements IResult<T, E> {
 
+    bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
+        onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | undefined | null,
+        onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | undefined | null
+    ): Result<TResult1 | TResult2, EResult1 | EResult2> {
+        throw new Error( bindErrorMsg )
+    }
 
+    isFailure(): this is Failure<T, E> {
+        return true
+    }
+
+    isSuccess(): this is Success<T, E> {
+        return false
+    }
+}
