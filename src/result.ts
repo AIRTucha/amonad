@@ -1,4 +1,4 @@
-import { CJustSuccess, CNoneFailure, monad, fulfilled, rejected } from "./monad"
+import { CJustSuccess, CNoneFailure, fulfilled, rejected } from "./monad"
 import { Thenable } from './thenable'
 
 const bindErrorMsg = "Result.bind() is should be full filled by monad decorator."
