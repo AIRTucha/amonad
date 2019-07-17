@@ -93,9 +93,9 @@ export const Maybe = <T>(value: T | undefined | null) =>
 /**
  * Container which represents value
  */
-@fulfilled("bind", isMaybe)
 class CJust<T> extends CJustSuccess<T, undefined> implements IMaybe<T> {
 
+    @fulfilled<any>(isMaybe)
     bind<TResult1 =  T, TResult2 = never>(
         onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | undefined | null,
         onNone?: (() => TResult2 | Maybe<TResult2>) | undefined | null
@@ -115,12 +115,12 @@ class CJust<T> extends CJustSuccess<T, undefined> implements IMaybe<T> {
 /**
  * Container which represents lack of value
  */
-@rejected("bind", isMaybe)
 class CNone<T> extends CNoneFailure<T, undefined> implements IMaybe<T> {
     constructor() {
         super(undefined)
     }
 
+    @rejected<any>(isMaybe)
     bind<TResult1 =  T, TResult2 = never>(
         onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | undefined | null,
         onNone?: (() => TResult2 | Maybe<TResult2>) | undefined | null

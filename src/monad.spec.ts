@@ -1,6 +1,5 @@
 import { CJustSuccess, CNoneFailure, fulfilled, rejected } from './monad'
 import { expect } from 'chai'
-import { strict } from 'assert'
 
 // *** Test logic of abstract CJustSuccess and CNoneFailure classes via local implementations ***
 
@@ -11,20 +10,24 @@ type TestMonad<T, E> = CJustSuccessTest<T, E> | CNoneFailureTest<T, E>
 
 const isMonad = (v: any) => v instanceof CJustSuccessTest || v instanceof CNoneFailureTest
 
-@fulfilled("bind", isMonad)
 class CJustSuccessTest<T, E> extends CJustSuccess<T, E> {
-    bind!: <TResult1 = T, EResult1 = E, TResult2 = never, EResult2 = never>(
+    @fulfilled<any>(isMonad)
+    bind<TResult1 = T, EResult1 = E, TResult2 = never, EResult2 = never>(
         onfulfilled?: ((value: T) => TResult1 | TestMonad<TResult1, EResult1>) | undefined | null,
         onrejected?: ((reason: any) => TResult2 | TestMonad<TResult2, EResult2>) | undefined | null
-    ) => TestMonad<TResult1 | TResult2, EResult1 | EResult2>
+    ): TestMonad<TResult1 | TResult2, EResult1 | EResult2 > {
+        throw ""
+    }
 }
 
-@rejected("bind", isMonad)
 class CNoneFailureTest<T, E> extends CNoneFailure<T, E> {
-    bind!: <TResult1 = T, EResult1 = E, TResult2 = never, EResult2 = never>(
+    @rejected<any>(isMonad)
+    bind<TResult1 = T, EResult1 = E, TResult2 = never, EResult2 = never>(
         onfulfilled?: ((value: T) => TResult1 | TestMonad<TResult1, EResult1>) | undefined | null,
         onrejected?: ((reason: any) => TResult2 | TestMonad<TResult2, EResult2>) | undefined | null
-    ) => TestMonad<TResult1 | TResult2, EResult1 | EResult2>
+    ): TestMonad<TResult1 | TResult2, EResult1 | EResult2> {
+        throw ""
+    }
 }
 
 const testNumber1 = 1
