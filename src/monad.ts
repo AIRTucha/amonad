@@ -19,8 +19,8 @@ interface Gettable<T, E> {
 
 
 export function fulfilled<T>(isMonad: (value: any) => boolean ) {
-    return function(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<T>) {
-        descriptor.value = function<T, TResult1 = T, TResult2 = never>(
+    return function(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
+        descriptor.value = function<TResult1 = T, TResult2 = never>(
             this: any,
             onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
             onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
@@ -28,15 +28,14 @@ export function fulfilled<T>(isMonad: (value: any) => boolean ) {
             if ( onfulfilled ) {
                 const value = onfulfilled( this.v )
                 return isMonad( value ) ? value : new target.constructor( value ) as any
-            }
-            else
+            } else
                 return this as any
         } as  any
     }
 }
 
 export function rejected<T>(isMonad: (value: any) => boolean ) {
-    return function(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<T>) {
+    return function(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
         descriptor.value = function<T, TResult1 = T, TResult2 = never>(
             this: any,
             onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
@@ -45,8 +44,7 @@ export function rejected<T>(isMonad: (value: any) => boolean ) {
             if ( onrejected ) {
                 const value = onrejected( this.v )
                 return isMonad( value ) ? value : new target.constructor( value ) as any
-            }
-            else
+            } else
                 return this as any
         } as  any
     }
@@ -61,7 +59,7 @@ export class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> {
      */
     constructor( private v: T ) { }
 
-    @fulfilled<any>(isThenable)
+    @fulfilled<T>(isThenable)
     then<TResult1 = T, TResult2 = never>(
         onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
         onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
@@ -87,7 +85,7 @@ export class CNoneFailure<T, E> implements Thenable<T>, Gettable<T, E> {
      */
     constructor( protected v: E ) { }
 
-    @rejected<any>(isThenable)
+    @rejected<T>(isThenable)
     then<TResult1 = T, TResult2 = never>(
         onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
         onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null

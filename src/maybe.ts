@@ -95,7 +95,7 @@ export const Maybe = <T>(value: T | undefined | null) =>
  */
 class CJust<T> extends CJustSuccess<T, undefined> implements IMaybe<T> {
 
-    @fulfilled<any>(isMaybe)
+    @fulfilled<T>(isMaybe)
     bind<TResult1 =  T, TResult2 = never>(
         onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | undefined | null,
         onNone?: (() => TResult2 | Maybe<TResult2>) | undefined | null
@@ -120,7 +120,7 @@ class CNone<T> extends CNoneFailure<T, undefined> implements IMaybe<T> {
         super(undefined)
     }
 
-    @rejected<any>(isMaybe)
+    @rejected<T>(isMaybe)
     bind<TResult1 =  T, TResult2 = never>(
         onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | undefined | null,
         onNone?: (() => TResult2 | Maybe<TResult2>) | undefined | null
