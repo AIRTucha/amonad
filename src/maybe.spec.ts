@@ -5,8 +5,6 @@ import { Just, isJust, None, isNone, Maybe, isMaybe } from "./maybe"
 import { Success, Failure} from "./result"
 import { testNumber1, mapNumbersToNumber, mapNumberToString, testString1, mapStringToString, testNumber2 } from './testUtils'
 
-const testValue = 1
-
 const throwIncorrectTypeIdentifiedType = () => {
     throw "Incorrectly identified type"
 }
@@ -45,14 +43,14 @@ const nothingToNumber = () => testNumber2
 
 describe("Maybe", () => {
     describe("Just", () => {
-        const just = Just(testValue)
+        const just = Just(testNumber1)
 
         describe("isJust()", () => {
 
             it("function", () => {
                 if (isJust(just)) {
                     const value: number = just.get()
-                    expect(value).to.be.eql(testValue)
+                    expect(value).to.be.eql(testNumber1)
                 } else
                     throwIncorrectTypeIdentifiedType()
             })
@@ -60,7 +58,7 @@ describe("Maybe", () => {
             it("method", () => {
                 if (just.isJust()) {
                     const value: number = just.get()
-                    expect(value).to.be.eql(testValue)
+                    expect(value).to.be.eql(testNumber1)
                 } else
                     throwIncorrectTypeIdentifiedType()
             })
@@ -73,7 +71,7 @@ describe("Maybe", () => {
                     throwIncorrectTypeIdentifiedType()
                 else {
                     const value: number = just.get()
-                    expect(value).to.be.eql(testValue)
+                    expect(value).to.be.eql(testNumber1)
                 }
             })
 
@@ -82,7 +80,7 @@ describe("Maybe", () => {
                     throwIncorrectTypeIdentifiedType()
                 else {
                     const value: number = just.get()
-                    expect(value).to.be.eql(testValue)
+                    expect(value).to.be.eql(testNumber1)
                 }
             })
         })
@@ -326,7 +324,7 @@ describe("Maybe", () => {
     describe("Maybe with", () => {
 
         it("value", () => {
-            expect(Maybe(testValue)).to.be.eql(Just(testValue))
+            expect(Maybe(testNumber1)).to.be.eql(Just(testNumber1))
         })
 
         it("undefined", () => {
@@ -335,7 +333,7 @@ describe("Maybe", () => {
 
         describe("isMaybe()", () => {
             it("Just", () => {
-                expect(isMaybe(Just(testValue))).to.be.true
+                expect(isMaybe(Just(testNumber1))).to.be.true
             })
 
             it("None", () => {
@@ -367,7 +365,7 @@ describe("Maybe", () => {
             })
 
             it("Success", () => {
-                expect(isMaybe(Success(testValue))).to.be.false
+                expect(isMaybe(Success(testNumber1))).to.be.false
             })
 
             it("Failure", () => {
