@@ -112,9 +112,9 @@ export const isSuccess =
 /**
  * Container which represents result of successful computation
  */
-@fulfilled("bind", isResult)
 class CSuccess<T, E extends Throwable> extends CJustSuccess<T, E> implements IResult<T, E> {
 
+    @fulfilled<T>(isResult)
     bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
         onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | undefined | null,
         onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | undefined | null
@@ -134,9 +134,9 @@ class CSuccess<T, E extends Throwable> extends CJustSuccess<T, E> implements IRe
 /**
  * Container which represents an Error occurred in during execution
  */
-@rejected("bind", isResult)
 class CFailure<T, E extends Throwable> extends CNoneFailure<T, E> implements IResult<T, E> {
 
+    @rejected<T>(isResult)
     bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
         onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | undefined | null,
         onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | undefined | null

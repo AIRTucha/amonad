@@ -93,13 +93,13 @@ Returns the inclosed primary value or the one provided as an argument.
 Signature for *Maybe* is:
 
 ```typescript
-Maybe<T>.prototype.getOrElse( value: T): T 
+Maybe<T>.prototype.getOrElse( value: T ): T 
 ```
 
 Signature for *Result* is:
 
 ```typescript
-Result<T, E>.prototype.getOrElse( value: T): T  
+Result<T, E>.prototype.getOrElse( value: T ): T  
 ```
 
 ### Maybe
