@@ -34,7 +34,7 @@ interface Dictionary<K, V> {
 }
 ```
 
-It can also be used as representation of optional value. The following examples shows the way to model a client interface with *Maybe*, some nationalities has a second name as essential part of their identity. Therefore the value can nicely treated as *Maybe<string>*.
+It can also be used as representation of optional value. The following examples shows the way to model a client interface with *Maybe*. Some nationalities has a second name as essential part of their identity. Therefore the value can nicely treated as *Maybe<string>*.
 
 ```typescript
 interface Client {
@@ -44,25 +44,171 @@ interface Client {
 }
 ```
 
-Computations which might fail due to expected reason are also a good application for *Maybe*. Lowest common denominator might be unavailable for natural reason. That is why  signature makes perfect *getLCD()* function:
+Computations which might fail due to expected reason are also a good application for *Maybe*. Lowest common denominator might be unavailable for natural reasons. That is why the signature makes perfect sense for *getLCD()* function:
 
 ```typescript
 getLCD(num1: number, num2: number): Maybe<number>
 ```
 
-WIP
+*Result* is mainly used for the representation of value which might not be available for an uncertain reason or for tagging of a data which absents can significantly affect an execution flow. For example, some piece of class’s state, required for computation, might be configured via a data provided during life-circle of the object. In this case the default status of the property can be represented by *Failure* which would clarify, that computation is not possible until the state is not initialized. Following example demonstrates described scenario. The method will return the result of the computation as *Success* or “Data is not initialized” error message as Failure. 
+
+```typescript
+class ResultExample {
+  value: Result<Value, string> = Failure(“Data is not initialized”)
+  
+  init( value: Value ) {
+    this.value = Success(value) 
+  }
+  calculateSomethingBasedOnValue(){
+    return this.value.bind( value =>
+        someValueBasedComputation( value, otherArgs)
+     )
+  }
+}
+```
+
+Moreover, monadic error handling is able to replace exceptions as the primary error propagation approach. Following example presents a possible type signature for a parsing function which utilizes Result as a return type.
+
+```typescript
+parseData( str: string ): Result<Data>
+```
+
+The output of such a function might contain processed value as *Success* or *Throwable* with an explanation of an error as *Failure*.
 
 ### Creation
 
-WIP
+As I already said it is possible to instantiate *Maybe* and *Result* via factory functions. Different ways to create the monads is presented in following code snippet.
 
-### Handling data
+```typescript
+const just = Just(3.14159265)
+const none = None<number>()
+const success = Success<string, Error>("Iron Man")
+const failure: Failure<string, Error> = Failure( new Error("Does not exist."))
+```
 
-WIP
+NaN safe division function can be created using this library in the way demonstrated bellow.
 
-### Handling error
+```typescript 
+const divide = (numerator: number, quotient: number ): Result<number, string> => 
+    quotient !== 0 ?
+        Success( numerator/quotient )
+    :
+        Failure("It is not possible to divide by 0")
+```
 
-WIP
+*Smart Maybe factory* is handy if there is Nullable object which has to be wrapped by *Maybe*.
+
+```typescript 
+const maybe = Maybe(map.get())
+```
+
+*Smart Result factory* expects a function *() => T | Success<T, E> | Failure<T, E>* which might throw object of E type as exception. *Result* wraps around the output accordingly.
+
+```typescript
+const data = Result( () => JSON.parse(inputStr) )
+```
+
+### Data handling
+
+The first argument of *bind()* method is handler responsible for processing of expected value. It accepts two kinds of output values: value of arbitrary, *monad* of the same type. It is also possible to pass a void function, but it will interrupt the transformation chain.
+
+```typescript 
+// converts number value to string
+const eNumberStr: Maybe<string> = Just(2.7182818284)
+    .bind( 
+        eNumber => `E number is: ${eNumber}` 
+    )
+// checks if string is valid and turns the monad to None if not
+const validValue = Just<string>(inputStr)
+    .bind( str => 
+        isValid(inputStr) ?
+            str
+            :
+            None<string>()
+    )
+```
+
+The content can also be access by *get()* and *getOrElse()* methods. *get()* output a union type of the value type and the error one for *Result* and the union type of the value and undefined for *Maybe*. The issue can be resolved by validation of the monad type by *isJust()* and *isSuccess()* methods or functions.
+
+```typescript
+if(maybe.isJust()) { // it is also possible to write it via isJust(maybe)
+    const value = maybe.get(); // return the value here
+    // Some other actions...
+} else {
+    // it does not make sense to call get() here, since the output is going to be undefined
+    // Some other actions...
+}
+
+if(result.isSuccess()) { // it is also possible to write it via isSuccess(result)
+    const error = result.get(); // return the error here
+    // Some other actions...
+} else {
+    const value = result.get(); // return the value here
+    // Some other actions...
+}
+```
+
+The main advantage of the library against other existing implementations of *Maybe* and *Result/Try* monads for JavaScript is compatibility with *async/await* syntax. It is possible to *await* *Result* and *Maybe* inside *async* functions since they implement *PromiseLike* interface. Anyway the output is going to be wrapped by *Promise*.
+
+```typescript
+const someStrangeMeaninglessComputations = async (num1: number, num2: number, num3: number ): Promise<number> => {
+    const lcd = await getLCD(num1, num2) // will throw undefined in case 
+    return await divide(lcd, num3)
+}
+```
+
+### Error handling 
+
+The second argument of *bind()* method is handler responsible for processing of unexpected behavior. It work a bit differently for *Result* and *Maybe*. *None* has no value, that's why its callback doesn't have argument. Additionally, it doesn't accept mapping to the value, since it should produce another *None* which also cannot contain any data. But returning of Just might be utilized to recovery *Maybe*. It is also possible to pass void procedure to perform some side effect, for example logging. *Failure* oriented handler works a bit more similar the first one. It accepts two kinds of output values: value of Throwable and *monad* of the *Result* type. Of course it is also possible to pass a void function, but it will interrupt the transformation chain.
+
+```typescript 
+// tries to divide number e by n, recoveries to Infinity if division is not possible
+const eDividedByN: Failure<string, string> = divide(2.7182818284, n)
+    .bind( 
+        eNumber => `E number divided by n is: ${eNumber}`,
+        error => Success(Infinity)
+    )
+// looks up color from a dictionary by key, if color is not available falls back to black
+const valueFrom = colorDictionary.get(key)
+    .bind( 
+        undefined,
+        () => Just("#000000")
+    )
+```
+
+It is also possible to verify if the monads are *Failure* or *None*, it can be done via *isNone()* and *isFailure()* methods and functions.
+
+```typescript
+if(maybe.isNone()) { // it is also possible to write it via isNone(maybe)
+    // it does not make sense to call get() here, since the output is going to be undefined
+    // Some other actions...
+} else {
+    const value = maybe.get(); // return the value here
+    // Some other actions...
+}
+
+if(result.isFailure()) { // it is also possible to write it via isFailure(result)
+    const value = result.get(); // return the value here
+    // Some other actions...
+} else {
+    const error = result.get(); // return the error here
+    // Some other actions...
+}
+```
+
+Awaiting of *None* and *Failure* led to throwing of exception inside async function. *None* has to inclosed value. Therefore *undefined* is thrown. *Failure* conveniently store *Throwable* object which fulfils it purpose in such an occasion. Beyond *async* function the error is propagated as rejected *Promise*.
+
+```typescript
+const someStrangeMeaninglessComputations = async (num1: number, num2: number, num3: number ): Promise<number> => {
+    try {
+        const lcd = await getLCD(num1, num2) // will throw undefined in case LCD is not available for the values
+        return await divide(lcd, num3) // throws "It is not possible to divide by 0" in case num3 is 0
+    } catch(e) {
+        // it is possible to recovery normal workflow here
+        return someFallBackValue
+    }
+}
+```
 
 ## API
 
