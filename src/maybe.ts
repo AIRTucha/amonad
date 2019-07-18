@@ -17,8 +17,8 @@ interface IMaybe<T> extends Thenable<T> {
      * @return Maybe object which inclose new value
      */
     bind<TResult1 =  T, TResult2 = never>(
-        onJust?: ((value: T) => TResult1 | IMaybe<TResult1>) | void,
-        onNone?: (() => IMaybe<TResult2>) | void
+        onJust?: ((value: T) => TResult1 | IMaybe<TResult1> | void),
+        onNone?: (() => IMaybe<TResult2> | void)
     ): Maybe<TResult1 | TResult2>
     /**
      * @returns Wether this is None
@@ -83,7 +83,7 @@ export const None =
  * @param value Nullable value which is going to be inclosed inside of Maybe
  * @return Maybe of Just or None depends if the value was defined
  */
-export const Maybe = <T>(value: T | undefined | null) =>
+export const Maybe = <T>(value: T | undefined | null): Maybe<T> =>
     value !== null && value !== undefined
     ?
         Just(value)
@@ -97,9 +97,9 @@ class CJust<T> extends CJustSuccess<T, undefined> implements IMaybe<T> {
 
     @fulfilled<T>(isMaybe)
     bind<TResult1 =  T, TResult2 = never>(
-        onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | void,
-        onNone?: (() => Maybe<TResult2>) | void
-    ): Maybe<TResult1> {
+        onJust?: ((value: T) => TResult1 | Maybe<TResult1> | void),
+        onNone?: (() => Maybe<TResult2> | void)
+    ): Maybe<TResult1 | TResult2> {
         throw new Error( bindErrorMsg )
     }
 
@@ -122,9 +122,9 @@ class CNone<T> extends CNoneFailure<T, undefined> implements IMaybe<T> {
 
     @rejected<T>(isMaybe)
     bind<TResult1 =  T, TResult2 = never>(
-        onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | void,
-        onNone?: (() =>  Maybe<TResult2>) | void
-    ): Maybe<TResult2> {
+        onJust?: ((value: T) => TResult1 | Maybe<TResult1> | void),
+        onNone?: (() =>  Maybe<TResult2> | void)
+    ): Maybe<TResult1 | TResult2> {
         throw new Error( bindErrorMsg )
     }
 
