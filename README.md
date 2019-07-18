@@ -110,8 +110,7 @@ const data = Result( () => JSON.parse(inputStr) )
 
 ### Data handling
 
-The first argument of *bind()* method is handler responsible for processing of expected value. It accepts two kinds of output values: value of arbitrary, *monad* of the same type. It is also possible to pass a void function, but it will interrupt the transformation chain.
-
+The first argument of *bind()* method is handler responsible for processing of expected value. It accepts two kinds of output values: value of arbitrary, *monad* of the same type.
 ```typescript 
 // converts number value to string
 const eNumberStr: Maybe<string> = Just(2.7182818284)
@@ -159,7 +158,7 @@ const someStrangeMeaninglessComputations = async (num1: number, num2: number, nu
 
 ### Error handling 
 
-The second argument of *bind()* method is handler responsible for processing of unexpected behavior. It work a bit differently for *Result* and *Maybe*. *None* has no value, that's why its callback doesn't have argument. Additionally, it doesn't accept mapping to the value, since it should produce another *None* which also cannot contain any data. But returning of Just might be utilized to recovery *Maybe*. It is also possible to pass void procedure to perform some side effect, for example logging. *Failure* oriented handler works a bit more similar the first one. It accepts two kinds of output values: value of Throwable and *monad* of the *Result* type. Of course it is also possible to pass a void function, but it will interrupt the transformation chain.
+The second argument of *bind()* method is handler responsible for processing of unexpected behavior. It work a bit differently for *Result* and *Maybe*. *None* has no value, that's why its callback doesn't have argument. Additionally, it doesn't accept mapping to the value, since it should produce another *None* which also cannot contain any data. But returning of Just might be utilized to recovery *Maybe*. It is also possible to pass void procedure to perform some side effect, for example logging. *Failure* oriented handler works a bit more similar the first one. It accepts two kinds of output values: value of Throwable and *monad* of the *Result* type.
 
 ```typescript 
 // tries to divide number e by n, recoveries to Infinity if division is not possible
@@ -224,16 +223,16 @@ Signature for *Maybe* is:
 
 ```typescript
 Maybe<T>.prototype.bind<TResult1 =  T, TResult2 = never>(
-    onJust?: ((value: T) => TResult1 | IMaybe<TResult1>) | void | null,
-    onNone?: (() => IMaybe<TResult2>) | void | null
-): Maybe<TResult1 | TResult2>
+    onJust?: (value: T) => TResult1 | Maybe<TResult1>,
+    onNone?: () =>  Maybe<TResult2>
+): Maybe<TResult1 | TResult2> 
 ```
 Signature for *Result* is:
 
 ```typescript
 Result<T, E>.prototype.bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
-    onSuccess?: ((value: T) => TResult1 | IResult<TResult1, EResult1>) | void,
-    onFailure?: ((reason: E) => EResult2 | IResult<TResult2, EResult2>) | void
+    onSuccess?: (value: T) => TResult1 | IResult<TResult1, EResult1>,
+    onFailure?: (reason: E) => EResult2 | IResult<TResult2, EResult2>
 ): Result<TResult1 | TResult2, EResult1 | EResult2>
 ```
 
