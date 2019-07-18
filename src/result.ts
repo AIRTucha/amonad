@@ -21,8 +21,8 @@ interface IResult<T, E extends Throwable> extends Thenable<T> {
      * @return Result object which inclose new value
      */
     bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
-        onSuccess?: ((value: T) => TResult1 | IResult<TResult1, EResult1>) | undefined | null,
-        onFailure?: ((reason: E) => EResult1 | IResult<TResult2, EResult2>) | undefined | null
+        onSuccess?: ((value: T) => TResult1 | IResult<TResult1, EResult1>) | void,
+        onFailure?: ((reason: E) => EResult1 | IResult<TResult2, EResult2>) | void
     ): Result<TResult1 | TResult2, EResult1 | EResult2>
     /**
      * @returns Wether this is Failure
@@ -116,8 +116,8 @@ class CSuccess<T, E extends Throwable> extends CJustSuccess<T, E> implements IRe
 
     @fulfilled<T>(isResult)
     bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
-        onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | undefined | null,
-        onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | undefined | null
+        onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | void,
+        onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | void
     ): Result<TResult1 | TResult2, EResult1 | EResult2> {
         throw new Error( bindErrorMsg )
     }
@@ -138,8 +138,8 @@ class CFailure<T, E extends Throwable> extends CNoneFailure<T, E> implements IRe
 
     @rejected<T>(isResult)
     bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
-        onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | undefined | null,
-        onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | undefined | null
+        onSuccess?: ((value: T) => TResult1 | Result<TResult1, EResult1>) | void,
+        onFailure?: ((reason: E) => EResult1 | Result<TResult2, EResult2>) | void
     ): Result<TResult1 | TResult2, EResult1 | EResult2> {
         throw new Error( bindErrorMsg )
     }

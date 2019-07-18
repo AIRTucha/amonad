@@ -135,23 +135,6 @@ describe("Maybe", () => {
             })
 
             describe("onrejected ignore mapping to", () => {
-                it('value of the same type', () => {
-                    const result = monad
-                        .bind(
-                            undefined,
-                            nothingToNumber
-                        )
-                    return assertIgnoreOnReject(result)
-                })
-
-                it('value of a different type', () => {
-                    const result = monad
-                        .bind(
-                            undefined,
-                            nothingToNumber
-                        )
-                    return assertIgnoreOnReject(result)
-                })
 
                 describe("monad of", () => {
                     it('the same type', () => {
@@ -170,15 +153,6 @@ describe("Maybe", () => {
                                 () => None<number>()
                             )
                         return assertIgnoreOnReject(result)
-                    })
-
-                    it('an different type', () => {
-                        const result = monad
-                            .bind(
-                                undefined,
-                                () => Promise.resolve(testNumber2)
-                            )
-                        return assertIgnoreOnReject(result as any)
                     })
                 })
             })
@@ -267,26 +241,6 @@ describe("Maybe", () => {
 
             describe("onrejected mapped to", () => {
 
-                it('value of the same type', () => {
-                    const result = monad
-                        .bind(
-                            undefined,
-                            nothingToNumber
-                        )
-                    assertIsNone(result)
-                    return assertRejectedMapNumberToNumber(result)
-                })
-
-                it('value of a different type', () => {
-                    const result = monad
-                        .bind(
-                            undefined,
-                            nothingToNumber
-                        )
-                    assertIsNone(result)
-                    return assertRejectedMapNumberToNumber(result)
-                })
-
                 describe("monad of", () => {
                     it('the same monad', () => {
                         const result = monad
@@ -306,15 +260,6 @@ describe("Maybe", () => {
                             )
                         assertIsJust( result )
                         return assertFulfilledMapNumberToNumber(result)
-                    })
-
-                    it('an different monad', async () => {
-                        const result = monad
-                            .bind<never, Promise<string>>(
-                                undefined,
-                                () => Promise.resolve(mapNumberToString(testNumber1))
-                            )
-                        assertIsNone(result)
                     })
                 })
             })
