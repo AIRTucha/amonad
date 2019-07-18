@@ -4,7 +4,6 @@ import { Just, None, Maybe } from "./maybe"
 
 import { Success, isSuccess, isFailure, Failure, Result, isResult } from "./result"
 import { testNumber1, mapNumbersToNumber, mapNumberToString, testString1, mapStringToString, testNumber2 } from './testUtils'
-import { stringify } from 'querystring'
 
 const testValue = 1
 const errorMsg = "testError"
@@ -13,10 +12,10 @@ const throwIncorrectTypeIdentifiedType = () => {
     throw "Incorrectly identified type"
 }
 
-const assertUnchangedJust = ( monad: Result<number, string>) =>
+const assertUnchangedJust = ( monad: Result<number | string, string>) =>
     expect(monad.get()).to.be.eql(testNumber1)
 
-const assertUnchangedNone = ( monad: Result<number, string>) =>
+const assertUnchangedNone = ( monad: Result<number | string, string>) =>
     expect(monad.get()).to.be.eql(testString1)
 
 const assertFulfilledMapNumberToNumber = ( maybe: Result<number, string>) =>
@@ -49,11 +48,11 @@ const assertRejectedMapStringToError = ( maybe: Result<number, Error>) => {
 const assertRejectedMapNumberToString = ( maybe: Result<string, string>) =>
     expect(maybe.get()).to.be.eql(testNumber1)
 
-const assertIgnoreOnReject = ( maybe: Result<number, string>) =>
+const assertIgnoreOnReject = ( maybe: Result<number | string, string>) =>
     assertIsJust(maybe) && assertUnchangedJust(maybe)
 
-const assertIgnoreOnFullfil = ( maybe: Result<number, string>) =>
-    assertIsNone(maybe)// && assertUnchangedNone(maybe)
+const assertIgnoreOnFullfil = ( maybe: Result<number | string, string>) =>
+    assertIsNone(maybe) && assertUnchangedNone(maybe)
 
 describe("Result", () => {
     describe("Success", () => {
@@ -169,12 +168,12 @@ describe("Result", () => {
 
                 describe("monad of", () => {
                     it('the same type', () => {
-                        const result = monad
-                            .bind(
+                        const result: Result<number | string, string> = monad
+                            .bind<number, string, string, string>(
                                 undefined,
                                 value => Success<string, string>(mapStringToString(value))
                             )
-                        return assertIgnoreOnReject(result as any)
+                        return assertIgnoreOnReject(result)
                     })
 
                     it('an opposite type', () => {
@@ -184,15 +183,6 @@ describe("Result", () => {
                                 value => Failure<number, string>(value)
                             )
                         return assertIgnoreOnReject(result)
-                    })
-
-                    it('an different type', () => {
-                        const result = monad
-                            .bind (
-                                undefined,
-                                value => Promise.resolve(value) as any
-                            )
-                        return assertIgnoreOnReject(result as any)
                     })
                 })
             })
@@ -254,7 +244,7 @@ describe("Result", () => {
                 it('value of a different type', () => {
                     const result = monad
                         .bind( mapNumberToString )
-                    assertIgnoreOnFullfil(result as any)
+                    assertIgnoreOnFullfil(result)
                 })
 
                 describe("monad of", () => {
@@ -273,8 +263,8 @@ describe("Result", () => {
 
                     it('an different type', () => {
                         const result = monad
-                            .bind( value => Promise.resolve(mapNumbersToNumber(value)) )
-                        assertIgnoreOnFullfil(result as any)
+                            .bind( value => Promise.resolve(mapNumbersToNumber(value)) as any )
+                        assertIgnoreOnFullfil(result)
                     })
                 })
             })
@@ -298,7 +288,7 @@ describe("Result", () => {
                             value => new Error(value)
                         )
                     assertIsNone(result)
-                    return assertRejectedMapStringToError(result as any)
+                    return assertRejectedMapStringToError(result)
                 })
 
                 describe("monad of", () => {
@@ -319,7 +309,7 @@ describe("Result", () => {
                                 value => Success<string, string>(mapStringToString(value))
                             )
                         assertIsJust( result )
-                        return assertFulfilledMapStringToString(result as any)
+                        return assertFulfilledMapStringToString(result)
                     })
                 })
             })
