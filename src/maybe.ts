@@ -99,7 +99,7 @@ class CJust<T> extends CJustSuccess<T, undefined> implements IMaybe<T> {
     bind<TResult1 =  T, TResult2 = never>(
         onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | void,
         onNone?: (() => Maybe<TResult2>) | void
-    ): Maybe<TResult1 | TResult2> {
+    ): Maybe<TResult1> {
         throw new Error( bindErrorMsg )
     }
 
@@ -124,7 +124,7 @@ class CNone<T> extends CNoneFailure<T, undefined> implements IMaybe<T> {
     bind<TResult1 =  T, TResult2 = never>(
         onJust?: ((value: T) => TResult1 | Maybe<TResult1>) | void,
         onNone?: (() =>  Maybe<TResult2>) | void
-    ): Maybe<TResult1 | TResult2> {
+    ): Maybe<TResult2> {
         throw new Error( bindErrorMsg )
     }
 
