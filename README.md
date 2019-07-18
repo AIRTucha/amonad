@@ -5,7 +5,7 @@ Implementation of *Maybe* and *Result* monads compatible with async/await.
 
 *Maybe* is a container dedicated for handling of a data which might be missing. Typically, it is used to represent an optional values. It allows to avoid usage of Nullable objects. *Result* is an expansion of *Maybe* which can additionally carry the reason of unavailability. It is mainly utilized to represent the output of an operation which might fail, since *Result* is also capable to carry an error message. 
 
-Both of them implements a fraction of Promise's functionality. It allows to model both of them via Promise. Therefore by implementation of PromiseLike interface they became compatible with async/await syntax.
+Both of them implements a fraction of Promise's functionality. It allows to model them via Promise. Therefore by implementation of PromiseLike interface they became compatible with async/await syntax.
 
 ## Get started 
 
@@ -22,8 +22,47 @@ Also there is an API for checking of an object type. It consist of *isMaybe*, *i
 The carried information can be accessed via *get* and *getOrElse* methods. The first one returns the value inclosed inside of the container. The second one returns only primary value from the monad and falls back to provided argument if the primary value is not available.
 
 ## Usage
- 
- WIP
+
+Typical usage of *Maybe* and *Result* is very similar, sometimes it is hardly possible to make a choice, but there is a clear semantic difference in the intend behind each of them. 
+
+*Maybe*, primary, should represent values which might not be available by design. The most obvious example is return type of *Dictionary*:
+
+```typescript
+interface Dictionary<K, V> {
+    set(key: K, value: V): void
+    get(key: K): Maybe<V>
+}
+```
+
+It can also be used as representation of optional value. The following examples shows the way to model a client interface with *Maybe*, some nationalities has a second name as essential part of their identity. Therefore the value can nicely treated as *Maybe<string>*.
+
+```typescript
+interface Client {
+    name: string
+    secondName: Maybe<string>
+    lastName: string
+}
+```
+
+Computations which might fail due to expected reason are also a good application for *Maybe*. Lowest common denominator might be unavailable for natural reason. That is why  signature makes perfect *getLCD()* function:
+
+```typescript
+getLCD(num1: number, num2: number): Maybe<number>
+```
+
+WIP
+
+### Creation
+
+WIP
+
+### Handling data
+
+WIP
+
+### Handling error
+
+WIP
 
 ## API
 
