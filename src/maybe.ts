@@ -17,8 +17,8 @@ interface IMaybe<T> extends Thenable<T> {
      * @return Maybe object which inclose new value
      */
     bind<TResult1 =  T, TResult2 = never>(
-        onJust?: ((value: T) => TResult1 | IMaybe<TResult1>) | void | null,
-        onNone?: (() => IMaybe<TResult2>) | void | null
+        onJust?: ((value: T) => TResult1 | IMaybe<TResult1>) | void,
+        onNone?: (() => IMaybe<TResult2>) | void
     ): Maybe<TResult1 | TResult2>
     /**
      * @returns Wether this is None
