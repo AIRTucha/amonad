@@ -283,7 +283,7 @@ describe("Result", () => {
 
                 it('value of a different type', () => {
                     const result = monad
-                        .bind(
+                        .bind<number, Error, number, Error>(
                             undefined,
                             value => new Error(value)
                         )
