@@ -224,16 +224,16 @@ Signature for *Maybe* is:
 
 ```typescript
 Maybe<T>.prototype.bind<TResult1 =  T, TResult2 = never>(
-    onJust?: ((value: T) => TResult1 | IMaybe<TResult1>) | undefined | null,
-    onNone?: (() => TResult2 | IMaybe<TResult2>) | undefined | null
+    onJust?: ((value: T) => TResult1 | IMaybe<TResult1>) | void | null,
+    onNone?: (() => IMaybe<TResult2>) | void | null
 ): Maybe<TResult1 | TResult2>
 ```
 Signature for *Result* is:
 
 ```typescript
 Result<T, E>.prototype.bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
-    onSuccess?: ((value: T) => TResult1 | IResult<TResult1, EResult1>) | undefined | null,
-    onFailure?: ((reason: E) => EResult1 | IResult<TResult2, EResult2>) | undefined | null
+    onSuccess?: ((value: T) => TResult1 | IResult<TResult1, EResult1>) | void,
+    onFailure?: ((reason: E) => EResult2 | IResult<TResult2, EResult2>) | void
 ): Result<TResult1 | TResult2, EResult1 | EResult2>
 ```
 
