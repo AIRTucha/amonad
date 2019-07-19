@@ -3,27 +3,27 @@
 
 Implementation of *Maybe* and *Result* monads compatible with async/await. 
 
-*Maybe* is a container dedicated for handling of a data which might be missing. Typically, it is used to represent an optional values. It allows to avoid usage of Nullable objects. *Result* is an expansion of *Maybe* which can additionally carry the reason of unavailability. It is mainly utilized to represent the output of an operation which might fail, since *Result* is also capable to carry an error message. 
+*Maybe* is a container dedicated for the handling of a data which might be missing. Typically, it is used to represent optional values. It allows avoiding usage of Nullable objects. *Result* is an expansion of *Maybe* which can additionally carry the reason of unavailability. It is mainly utilized to represent the output of an operation which might fail since *Result* is also capable of containing an error message. 
 
-Both of them implements a fraction of Promise's functionality. It allows to model them via Promise. Therefore by implementation of PromiseLike interface they became compatible with async/await syntax.
+Both of them implements a fraction of Promise's functionality. It allows us to model them via Promise. Therefore by the implementation of PromiseLike interface, they became compatible with async/await syntax.
 
 ## Get started 
 
-The package is available via *npm*. It has to be installed as local dependency:
+The package is available via *npm*. It has to be installed as a local dependency:
 
     npm install amonad
 
-Each of the types can be represented by values of two types: *Just* and *None* for *Maybe*, *Success* and *Failure* for *Result*. The values have dedicated factory functions with corespondent names. The can also be created by a *smart factories* which are jut *Maybe* and *Result*. They creates correct version of a monad based on provided argument.
+Each of them can be represented by values of two types: *Just* and *None* for *Maybe*, *Success* and *Failure* for *Result*. The values have dedicated factory functions with correspondent names. They can also be created by a *smart factories* which are jut *Maybe* and *Result*. They create a correct version of a monad based on the provided argument.
 
-The primary way to access inclosed values is *bind()* method. It expects two optional arguments which are represented by functions which performs operations over internal state of the containers. The first one handle the data and the second is used for processing of its absents.
+The primary way to access inclosed values is *bind()* method. It expects two optional arguments which are represented by functions which perform operations over the internal state of the containers. The first one handles the data, and the second is used for processing of its absents.
 
-Also there is an API for checking of an object type. It consist of *isMaybe*, *isJust*, *isNone*, *isResult*, *isSuccess* and *isFailure* functions which accept any object as an argument and returns result of the assertion as boolean value. Moreover, there are *isJust* and *isNone* methods for *Maybe*. Corespondently, there are *isSuccess* and *isFailure* methods for *Result*. 
+Also, there is an API for checking of an object type. It consist of *isMaybe*, *isJust*, *isNone*, *isResult*, *isSuccess* and *isFailure* functions which accept any object as an argument and returns result of the assertion as boolean value. Moreover, there are *isJust* and *isNone* methods for *Maybe*. Correspondingly, there are *isSuccess* and *isFailure* methods for *Result*. 
 
-The carried information can be accessed via *get* and *getOrElse* methods. The first one returns the value inclosed inside of the container. The second one returns only primary value from the monad and falls back to provided argument if the primary value is not available.
+The carried information can be accessed via *get* and *getOrElse* methods. The first one returns the value inclosed inside of the container. The second one returns only the primary value from the monad and falls back to the provided argument if the primary value is not available.
 
 ## Usage
 
-Typical usage of *Maybe* and *Result* is very similar, sometimes it is hardly possible to make a choice, but there is a clear semantic difference in the intend behind each of them. 
+Typical usage of *Maybe* and *Result* is very similar. Sometimes it is hardly possible to make a choice, but there is a clear semantic difference in the intention behind each of them. 
 
 *Maybe*, primary, should represent values which might not be available by design. The most obvious example is return type of *Dictionary*:
 
@@ -34,7 +34,7 @@ interface Dictionary<K, V> {
 }
 ```
 
-It can also be used as representation of optional value. The following examples shows the way to model a client interface with *Maybe*. Some nationalities has a second name as essential part of their identity. Therefore the value can nicely treated as *Maybe<string>*.
+It can also be used as a representation of optional value. The following examples show the way to model a client interface with *Maybe*. Some nationalities have a second name as an essential part of their identity. Therefore the value can nicely be treated as *Maybe<string>*.
 
 ```typescript
 interface Client {
@@ -44,13 +44,13 @@ interface Client {
 }
 ```
 
-Computations which might fail due to expected reason are also a good application for *Maybe*. Lowest common denominator might be unavailable for natural reasons. That is why the signature makes perfect sense for *getLCD()* function:
+Computations which might fail due to expected reason are also a good application for *Maybe*. Lowest common denominator might be unavailable for fundamental reasons. That is why the signature makes perfect sense for *getLCD()* function:
 
 ```typescript
 getLCD(num1: number, num2: number): Maybe<number>
 ```
 
-*Result* is mainly used for the representation of value which might not be available for an uncertain reason or for tagging of a data which absents can significantly affect an execution flow. For example, some piece of class’s state, required for computation, might be configured via a data provided during life-circle of the object. In this case the default status of the property can be represented by *Failure* which would clarify, that computation is not possible until the state is not initialized. Following example demonstrates described scenario. The method will return the result of the computation as *Success* or “Data is not initialized” error message as Failure. 
+*Result* is mainly used for the representation of value which might not be available for an uncertain reason or for tagging of a data which absents can significantly affect execution flow. For example, some piece of class’s state, required for computation, might be configured via an input provided during life-circle of the object. In this case, the default status of the property can be represented by *Failure* which would clarify, that computation is not possible until the state is not initialized. Following example demonstrates the described scenario. The method will return the result of the calculation as *Success* or “Data is not initialized” error message as Failure. 
 
 ```typescript
 class ResultExample {
@@ -77,7 +77,7 @@ The output of such a function might contain processed value as *Success* or *Thr
 
 ### Creation
 
-As I already said it is possible to instantiate *Maybe* and *Result* via factory functions. Different ways to create the monads is presented in following code snippet.
+As I already said it is possible to instantiate *Maybe* and *Result* via factory functions. Different ways to create the monads is presented in the following code snippet.
 
 ```typescript
 const just = Just(3.14159265)
@@ -86,7 +86,7 @@ const success = Success<string, Error>("Iron Man")
 const failure: Failure<string, Error> = Failure( new Error("Does not exist."))
 ```
 
-NaN safe division function can be created using this library in the way demonstrated bellow.
+NaN safe division function can be created using this library in the way demonstrated below.
 
 ```typescript 
 const divide = (numerator: number, quotient: number ): Result<number, string> => 
@@ -134,7 +134,7 @@ if(maybe.isJust()) { // it is also possible to write it via isJust(maybe)
     const value = maybe.get(); // return the value here
     // Some other actions...
 } else {
-    // it does not make sense to call get() here, since the output is going to be undefined
+    // it does not make sense to call get() here since the output is going to be undefined
     // Some other actions...
 }
 
@@ -147,7 +147,7 @@ if(result.isSuccess()) { // it is also possible to write it via isSuccess(result
 }
 ```
 
-The main advantage of the library against other existing implementations of *Maybe* and *Result/Try* monads for JavaScript is compatibility with *async/await* syntax. It is possible to *await* *Result* and *Maybe* inside *async* functions since they implement *PromiseLike* interface. Anyway the output is going to be wrapped by *Promise*.
+The main advantage of the library against other existing implementations of *Maybe* and *Result/Try* monads for JavaScript is compatibility with *async/await* syntax. It is possible to *await* *Result* and *Maybe* inside *async* functions since they implement *PromiseLike* interface. Anyway, the output is going to be wrapped by *Promise*.
 
 ```typescript
 const someStrangeMeaninglessComputations = async (num1: number, num2: number, num3: number ): Promise<number> => {
@@ -158,7 +158,7 @@ const someStrangeMeaninglessComputations = async (num1: number, num2: number, nu
 
 ### Error handling 
 
-The second argument of *bind()* method is handler responsible for processing of unexpected behavior. It work a bit differently for *Result* and *Maybe*. *None* has no value, that's why its callback doesn't have argument. Additionally, it doesn't accept mapping to the value, since it should produce another *None* which also cannot contain any data. But returning of Just might be utilized to recovery *Maybe*. It is also possible to pass void procedure to perform some side effect, for example logging. *Failure* oriented handler works a bit more similar the first one. It accepts two kinds of output values: value of Throwable and *monad* of the *Result* type.
+The second argument of the *bind()* method is handler responsible for the processing of unexpected behaviour. It works a bit differently for *Result* and *Maybe*. *None* has no value, that's why its callback doesn't have an argument. Additionally, it doesn't accept mapping to the value, since it should produce another *None* which also cannot contain any data. But returning of Just might be utilized to recovery *Maybe*. It is also possible to pass a void procedure to perform some side effect, for example, logging. *Failure* oriented handler works a bit more similar the first one. It accepts two kinds of output values: the value of Throwable and *monad* of the *Result* type.
 
 ```typescript 
 // tries to divide number e by n, recoveries to Infinity if division is not possible
@@ -179,7 +179,7 @@ It is also possible to verify if the monads are *Failure* or *None*, it can be d
 
 ```typescript
 if(maybe.isNone()) { // it is also possible to write it via isNone(maybe)
-    // it does not make sense to call get() here, since the output is going to be undefined
+    // it does not make sense to call get() here since the output is going to be undefined
     // Some other actions...
 } else {
     const value = maybe.get(); // return the value here
@@ -195,7 +195,7 @@ if(result.isFailure()) { // it is also possible to write it via isFailure(result
 }
 ```
 
-Awaiting of *None* and *Failure* led to throwing of exception inside async function. *None* has to inclosed value. Therefore *undefined* is thrown. *Failure* conveniently store *Throwable* object which fulfils it purpose in such an occasion. Beyond *async* function the error is propagated as rejected *Promise*.
+Awaiting of *None* and *Failure* led to throwing of an exception inside async function. *None* has to inclosed value. Therefore *undefined* is thrown. *Failure* conveniently store *Throwable* object which fulfils its purpose in such an occasion. Beyond *async* function the error is propagated as rejected *Promise*.
 
 ```typescript
 const someStrangeMeaninglessComputations = async (num1: number, num2: number, num3: number ): Promise<number> => {
@@ -211,13 +211,13 @@ const someStrangeMeaninglessComputations = async (num1: number, num2: number, nu
 
 ## API
 
-The API contains a ap to certain degree shared API and ones specific for *Maybe* and *Result*.
+The API contains an up to a certain degree shared API and ones specific for *Maybe* and *Result*.
 
 ### Commune
 
 #### Monad.prototype.bind()
 
-Accordingly apply the handlers, produces a new Monadic as container for the output of called function
+Accordingly, applying the handlers produces a new Monadic as a container for the output of called function
 
 Signature for *Maybe* is:
 
@@ -227,6 +227,7 @@ Maybe<T>.prototype.bind<TResult1 =  T, TResult2 = never>(
     onNone?: () =>  Maybe<TResult2>
 ): Maybe<TResult1 | TResult2> 
 ```
+
 Signature for *Result* is:
 
 ```typescript
@@ -238,7 +239,7 @@ Result<T, E>.prototype.bind<TResult1 = T, EResult1 extends Throwable = E, TResul
 
 #### Monad.prototype.then()
 
-Implementation of PromiseLike.then() for proper functioning of await
+Implementation of PromiseLike.then() for the proper functioning of await
 
 **param** *onfulfilled* Handler for fulfilled value
 
@@ -252,11 +253,12 @@ Monad<T>.prototype.then<TResult1 = T, TResult2 = never>(
     onrejected?: ( ( reason: any ) => TResult2 | PromiseLike<TResult2> ) | undefined | null
 ): PromiseLike<TResult1 | TResult2>
 ```
+
 It is internally utilized by *bind()*.
 
 #### Monad.prototype.get()
 
-Returns the value inclosed inside container.
+It returns the value enclosed inside a container.
 
 Signature for *Maybe* is:
 
@@ -272,7 +274,7 @@ Result<T, E>.prototype.get(): T | E
 
 #### Monad.prototype.getOrElse()
 
-Returns the inclosed primary value or the one provided as an argument.
+It returns the inclosed primary value or the one provided as an argument.
 
 Signature for *Maybe* is:
 
@@ -298,7 +300,7 @@ Maybe<T>(value: T | undefined | null) => Maybe<T>
 
 #### Just
 
-Represents a value of specified type. It can be created via a factory which wraps the value with *Just<T>*
+It represents the value of a specified type. It can be created via a factory which wraps the value with *Just<T>*
 
 ```typescript
 Just<T>(value: T) => Maybe<T> 
@@ -306,7 +308,7 @@ Just<T>(value: T) => Maybe<T>
 
 #### None
 
-Represents an absents of a value with specified type. It can be created via a factory with specified type.
+It represents an absents of value with the specified type. It can be created via a factory with the specified type.
 
 ```typescript
 None<T>() => Maybe<T> 
@@ -314,7 +316,7 @@ None<T>() => Maybe<T>
 
 #### isJust
 
-It exists as a stand alone function which checks wether object of any type is *Just*
+It exists as a stand-alone function which checks whether an object of any type is *Just*
 
 ```typescript
 isJust<T>(obj: any): obj is Just<T>
@@ -328,7 +330,7 @@ Maybe<T>.prototype.isJust(): obj is Just<T>
 
 #### isNone
 
-It exists as a stand alone function which checks wether object of any type is *None*
+It exists as a stand-alone function which checks whether an object of any type is *None*
 
 ```typescript
 isNone<T>(obj: any): obj is None<T>
@@ -352,7 +354,7 @@ Maybe<T, E extends Throwable>(action: () => T | Result<T, E>) => Result<T, E>
 
 #### Success
 
-Represents a value of specified type. It can be created via a factory which wraps the value with *Success<T, E>*
+It represents the value of a specified type. It can be created via a factory which wraps the value with *Success<T, E>*
 
 ```typescript
 Success<T, E extends Throwable>(value: T) => Result<T, E>
@@ -360,7 +362,7 @@ Success<T, E extends Throwable>(value: T) => Result<T, E>
 
 #### Failure
 
-Represents an error which explains an absents of a value. It can be created via a factory with specified type.
+Represents an error which explains an absents of a value. It can be created via a factory with the specified type.
 
 ```typescript
 Failure<T, E extends Throwable>(error: E) => Result<T, E>
@@ -368,13 +370,13 @@ Failure<T, E extends Throwable>(error: E) => Result<T, E>
 
 #### isSuccess
 
-It exists as a stand alone function which checks wether object of any type is *Success*
+It exists as a stand-alone function which checks whether an object of any type is *Success*
 
 ```typescript
 isSuccess<T>(obj: any): obj is Success<T>
 ```
 
-Moreover *Result* has a method dedicated to the same goal.
+Moreover, *Result* has a method dedicated to the same goal.
 
 ```typescript
 Result<T, E>.prototype.isSuccess(): obj is Success<T, E>
@@ -382,13 +384,13 @@ Result<T, E>.prototype.isSuccess(): obj is Success<T, E>
 
 #### isFailure
 
-It exists as a stand alone function which checks wether object of any type is *Failure*
+It exists as a stand-alone function which checks whether an object of any type is *Failure*
 
 ```typescript
 isFailure<T, E>(obj: any): obj is Failure<T, E>
 ```
 
-Moreover *Result* has a method dedicated to the same goal.
+Moreover, *Result* has a method dedicated to the same goal.
 
 ```typescript
 Result<T, E>.prototype.isFailure(): obj is Failure<T>
@@ -406,7 +408,7 @@ Build application once
 
     npm run build
 
-Build application and watch for changes of files
+Build an application and watch for changes of files
 
     npm run build:w
 
