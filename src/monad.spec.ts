@@ -90,6 +90,12 @@ describe('CJustSuccess', () => {
         ).eql(testNumber1)
     })
 
+    it('getOrThrow() return correct value', () => {
+        expect(
+            new CJustSuccess(testNumber1).getOrThrow()
+        ).eql(testNumber1)
+    })
+
     describe("then()", () => {
         let monad!: CJustSuccess<number, string>
 
@@ -324,6 +330,13 @@ describe("await", () => {
             } catch (e) {
                 expect(e).to.be.eql(testString1)
             }
+        })
+
+        it('getOrThrow() throw correct error', () => {
+            const error = new Error(testString1)
+            expect(
+                () => new CNoneFailure(error).getOrThrow()
+            ).to.throws(error)
         })
 
         describe("Promise", () => {

@@ -15,6 +15,12 @@ interface Gettable<T, E> {
      * @return Stored value of T or a provided fallback
      */
     getOrElse( value: T ): T
+    /**
+     * @returns Object of type T if available or throws an error which described absents of value
+     * @note It is not right way to use the API,
+     *       but it might be handy refactoring of an old codebase
+     */
+    getOrThrow(): T
 }
 
 
@@ -74,6 +80,10 @@ export class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> {
     getOrElse( value: T ): T {
         return this.v
     }
+
+    getOrThrow() {
+        return this.v
+    }
 }
 
 /**
@@ -99,5 +109,9 @@ export class CNoneFailure<T, E> implements Thenable<T>, Gettable<T, E> {
 
     get()  {
         return this.v
+    }
+
+    getOrThrow(): T {
+        throw this.v
     }
 }
