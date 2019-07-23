@@ -1,6 +1,6 @@
 {
   "name": "amonad",
-  "version": "0.8.2", 
+  "version": "0.8.4", 
   "description": "Experimental implementation of Maybe and Result monads compatible with await.",
   "main": "./dist/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "test": "mocha --recursive  --require ts-node/register \"src/**/*.spec.ts\" --watch",
     "test:once": "mocha --require ts-node/register \"src/**/*.spec.ts\"",
-    "cover": "nyc npm run test:once",
+    "test:c": "nyc npm run test:once",
     "test:ci": "nyc npm run test:once && nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
