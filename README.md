@@ -127,7 +127,7 @@ const validValue = Just<string>(inputStr)
     )
 ```
 
-The content can also be access by *get()* and *getOrElse()* methods. *get()* output a union type of the value type and the error one for *Result* and the union type of the value and undefined for *Maybe*. The issue can be resolved by validation of the monad type by *isJust()* and *isSuccess()* methods or functions.
+The content can also be access by *get()*, *getOrElse()* and *getOrThrow()* methods. *get()* output a union type of the value type and the error one for *Result* and the union type of the value and undefined for *Maybe*. The issue can be resolved by validation of the monad type by *isJust()* and *isSuccess()* methods or functions.
 
 ```typescript
 if(maybe.isJust()) { // it is also possible to write it via isJust(maybe)
@@ -248,7 +248,7 @@ Implementation of PromiseLike.then() for the proper functioning of await
 **return** *PromiseLike* object which inclose new value
      
 ```typescript
-Monad<T>.prototype.then<TResult1 = T, TResult2 = never>(
+Monad<T, E>.prototype.then<TResult1 = T, TResult2 = never>(
     onfulfilled?: ( ( value: T ) => TResult1 | PromiseLike<TResult1> ) | undefined | null,
     onrejected?: ( ( reason: any ) => TResult2 | PromiseLike<TResult2> ) | undefined | null
 ): PromiseLike<TResult1 | TResult2>
@@ -287,6 +287,16 @@ Signature for *Result* is:
 ```typescript
 Result<T, E>.prototype.getOrElse( value: T ): T  
 ```
+
+#### Monad.prototype.getOrThrow()
+
+It returns the value for *Just* and *Success* and throws the throwable for *Failure*, *None* throws an *undefined*.
+
+```typescript
+Monad<T, E>.prototype.getOrElse( value: T ): T 
+```
+
+It might be useful for refactoring of a legacy codebase, since it simplifies implementation of interfaces with exceptions based error handling.
 
 ### Maybe
 
