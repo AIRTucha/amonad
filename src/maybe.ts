@@ -16,9 +16,9 @@ interface IMaybe<T> extends Thenable<T> {
      * @param onNone Handler for onrejected value
      * @return Maybe object which inclose new value
      */
-    bind<TResult1 =  T, TResult2 = never>(
-        onJust?: ((value: T) => TResult1 | IMaybe<TResult1> | void),
-        onNone?: (() => IMaybe<TResult2> | void)
+    bind<TResult1 = T, TResult2 = never>(
+        onJust?: ( ( value: T ) => TResult1 | IMaybe<TResult1> | void ),
+        onNone?: ( () => IMaybe<TResult2> | void )
     ): Maybe<TResult1 | TResult2>
     /**
      * @returns Wether this is None
@@ -49,21 +49,21 @@ export type Maybe<T> = Just<T> | None<T>
  * @param obj Object which might be Maybe
  * @returns Wether the object is Maybe
  */
-export const isMaybe = <T>(obj: any): obj is Maybe<T> =>
-    isNone(obj) || isJust(obj)
+export const isMaybe = <T>( obj: any ): obj is Maybe<T> =>
+    isNone( obj ) || isJust( obj )
 
 /**
  * @param obj Object which might be None
  * @returns Wether the object is None
  */
-export const isNone = <T>(obj: any): obj is None<T> =>
+export const isNone = <T>( obj: any ): obj is None<T> =>
     obj instanceof CNone
 
 /**
  * @param obj Object which might be Just
  * @returns Wether the object is Just
  */
-export const isJust = <T>(obj: any): obj is Just<T> =>
+export const isJust = <T>( obj: any ): obj is Just<T> =>
     obj instanceof CJust
 
 /**
@@ -71,23 +71,23 @@ export const isJust = <T>(obj: any): obj is Just<T> =>
  * @returns Maybe with inclosed value as Just
  */
 export const Just =
-<T>(value: T): Maybe<T> => new CJust(value) as any
+    <T>( value: T ): Maybe<T> => new CJust( value ) as any
 
 /**
 * @returns Empty Maybe as None
 */
 export const None =
-<T>(): Maybe<T> => new CNone() as any
+    <T>(): Maybe<T> => new CNone() as any
 
 /**
  * @param value Nullable value which is going to be inclosed inside of Maybe
  * @return Maybe of Just or None depends if the value was defined
  */
-export const Maybe = <T>(value: T | undefined | null): Maybe<T> =>
+export const Maybe = <T>( value: T | undefined | null ): Maybe<T> =>
     value !== null && value !== undefined
-    ?
-        Just(value)
-    :
+        ?
+        Just( value )
+        :
         None()
 
 /**
@@ -95,9 +95,9 @@ export const Maybe = <T>(value: T | undefined | null): Maybe<T> =>
  */
 class CJust<T> extends CJustSuccess<T, undefined> implements IMaybe<T> {
 
-    @fulfilled<T>(isMaybe)
-    bind<TResult1 =  T, TResult2 = never>(
-        onJust?: (value: T) => TResult1 | Maybe<TResult1>,
+    @fulfilled<T>( isMaybe )
+    bind<TResult1 = T, TResult2 = never>(
+        onJust?: ( value: T ) => TResult1 | Maybe<TResult1>,
         onNone?: () => Maybe<TResult2>
     ): Maybe<TResult1 | TResult2> {
         throw new Error( bindErrorMsg )
@@ -117,13 +117,13 @@ class CJust<T> extends CJustSuccess<T, undefined> implements IMaybe<T> {
  */
 class CNone<T> extends CNoneFailure<T, undefined> implements IMaybe<T> {
     constructor() {
-        super(undefined)
+        super( undefined )
     }
 
-    @rejected<T>(isMaybe)
-    bind<TResult1 =  T, TResult2 = never>(
-        onJust?: (value: T) => TResult1 | Maybe<TResult1>,
-        onNone?: () =>  Maybe<TResult2>
+    @rejected<T>( isMaybe )
+    bind<TResult1 = T, TResult2 = never>(
+        onJust?: ( value: T ) => TResult1 | Maybe<TResult1>,
+        onNone?: () => Maybe<TResult2>
     ): Maybe<TResult1 | TResult2> {
         throw new Error( bindErrorMsg )
     }

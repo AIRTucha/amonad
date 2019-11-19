@@ -24,35 +24,35 @@ interface Gettable<T, E> {
 }
 
 
-export function fulfilled<T>(isMonad: (value: any) => boolean ) {
-    return function(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
-        descriptor.value = function<TResult1 = T, TResult2 = never>(
+export function fulfilled<T>( isMonad: ( value: any ) => boolean ) {
+    return function ( target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any> ) {
+        descriptor.value = function <TResult1 = T, TResult2 = never>(
             this: any,
-            onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
-            onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
+            onfulfilled?: ( ( value: T ) => TResult1 | Thenable<TResult1> ) | undefined | null,
+            onrejected?: ( ( reason: any ) => TResult2 | Thenable<TResult2> ) | undefined | null
         ): Thenable<TResult1 | TResult2> {
             if ( onfulfilled ) {
                 const value = onfulfilled( this.v )
                 return isMonad( value ) ? value : new target.constructor( value ) as any
             } else
                 return this as any
-        } as  any
+        } as any
     }
 }
 
-export function rejected<T>(isMonad: (value: any) => boolean ) {
-    return function(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
-        descriptor.value = function<T, TResult1 = T, TResult2 = never>(
+export function rejected<T>( isMonad: ( value: any ) => boolean ) {
+    return function ( target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any> ) {
+        descriptor.value = function <T, TResult1 = T, TResult2 = never>(
             this: any,
-            onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
-            onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
+            onfulfilled?: ( ( value: T ) => TResult1 | Thenable<TResult1> ) | undefined | null,
+            onrejected?: ( ( reason: any ) => TResult2 | Thenable<TResult2> ) | undefined | null
         ): Thenable<TResult1 | TResult2> {
             if ( onrejected ) {
                 const value = onrejected( this.v )
                 return isMonad( value ) ? value : new target.constructor( value ) as any
             } else
                 return this as any
-        } as  any
+        } as any
     }
 }
 
@@ -65,12 +65,12 @@ export class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> {
      */
     constructor( private v: T ) { }
 
-    @fulfilled<T>(isThenable)
+    @fulfilled<T>( isThenable )
     then<TResult1 = T, TResult2 = never>(
-        onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
-        onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
+        onfulfilled?: ( ( value: T ) => TResult1 | Thenable<TResult1> ) | undefined | null,
+        onrejected?: ( ( reason: any ) => TResult2 | Thenable<TResult2> ) | undefined | null
     ): Thenable<TResult1 | TResult2> {
-        throw new Error(bindErrorMsg)
+        throw new Error( bindErrorMsg )
     }
 
     get(): T {
@@ -81,7 +81,7 @@ export class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> {
         return this.v
     }
 
-    getOrThrow() {
+    getOrThrow(): T {
         return this.v
     }
 }
@@ -95,19 +95,19 @@ export class CNoneFailure<T, E> implements Thenable<T>, Gettable<T, E> {
      */
     constructor( protected v: E ) { }
 
-    @rejected<T>(isThenable)
+    @rejected<T>( isThenable )
     then<TResult1 = T, TResult2 = never>(
-        onfulfilled?: ((value: T) => TResult1 | Thenable<TResult1>) | undefined | null,
-        onrejected?: ((reason: any) => TResult2 | Thenable<TResult2>) | undefined | null
+        onfulfilled?: ( ( value: T ) => TResult1 | Thenable<TResult1> ) | undefined | null,
+        onrejected?: ( ( reason: any ) => TResult2 | Thenable<TResult2> ) | undefined | null
     ): Thenable<TResult1 | TResult2> {
-        throw new Error(bindErrorMsg)
+        throw new Error( bindErrorMsg )
     }
 
     getOrElse( value: T ): T {
         return value
     }
 
-    get()  {
+    get() {
         return this.v
     }
 

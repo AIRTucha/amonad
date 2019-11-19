@@ -17,4 +17,4 @@ export interface Thenable<T> extends PromiseLike<T> {
  * @param obj Object which might be Thenable
  * @returns Wether the object is Thenable
  */
-export const isThenable = <T>(obj: any): obj is Thenable<T> => isFunction(obj.then)
+export const isThenable = <T>( obj: any ): obj is Thenable<T> => isFunction( obj.then )

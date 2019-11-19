@@ -9,16 +9,18 @@
     "noImplicitAny": false,
     "removeComments": true,
     "preserveConstEnums": true,
-    "noEmitHelpers": true,
+    "noEmitHelpers": false,
     "outDir": "dist",
     "rootDir": "src",
     "pretty": true,
     "declaration": true,
-    "importHelpers": true
+    "importHelpers": false
   },
   "compileOnSave": true,
   "buildOnSave": true,
-  "files": [ "./src/index.ts"],
+  "files": [
+    "./src/index.ts"
+  ],
   "exclude": [
     "**/*.spec.ts",
     "dist",
