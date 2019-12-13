@@ -1,7 +1,7 @@
 # Amonad
 [![Build Status](https://travis-ci.org/AIRTucha/amonad.svg?branch=master)](https://travis-ci.org/AIRTucha/amonad) [![Coverage Status](https://coveralls.io/repos/github/AIRTucha/amonad/badge.svg?branch=master)](https://coveralls.io/github/AIRTucha/amonad?branch=master)
 
-Implementation of *Maybe* and *Result* monads compatible with async/await. 
+Implementation of *Maybe* and *Result* monads compatible with async/await. Learn more about monads [here](https://dev.to/airtucha/functors-and-monads-in-plain-typescript-33o1).
 
 *Maybe* is a container dedicated for the handling of a data which might be missing. Typically, it is used for representation of optional values. It allows prevent usage of Nullable objects. *Result* is an expansion of *Maybe* which can additionally carry the reason of unavailability. It is mainly utilized to represent the output of an operation which might fail since *Result* is also capable of containing an error message. 
 
