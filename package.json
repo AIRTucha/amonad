@@ -1,6 +1,6 @@
 {
   "name": "amonad",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Experimental implementation of Maybe and Result monads compatible with await.",
   "main": "./dist/index.js",
   "scripts": {
