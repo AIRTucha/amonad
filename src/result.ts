@@ -1,7 +1,7 @@
 import { CJustSuccess, CNoneFailure, fulfilled, rejected } from "./monad"
 import { Thenable } from './thenable'
 
-const bindErrorMsg = "Result.bind() is should be full filled by monad decorator."
+const thenErrorMsg = "Result.then() is should be full filled by monad decorator."
 
 /**
  * Values which might represent an Error
@@ -11,7 +11,7 @@ export type Throwable = Error | string
 /**
  * Define properties specific to Result monad
  *
- * @note Bind is not defined, since it is attached by decorator
+ * @note then() is not defined, since it is attached by decorator
  */
 interface IResult<T, E extends Throwable> extends Thenable<T> {
     /**
@@ -31,17 +31,6 @@ interface IResult<T, E extends Throwable> extends Thenable<T> {
      * @return Result object which inclose new value
      */
     then<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never>(
-        onSuccess?: ( value: T ) => TResult1 | IResult<TResult1, EResult1>,
-        onFailure?: ( reason: E ) => EResult2 | IResult<TResult2, EResult2>
-    ): Result<TResult1 | TResult2, EResult1 | EResult2>
-    /**
-     * Accordingly apply the handlers produces a new Result as container for produced output
-     * @deprecated
-     * @param onJust Handler for fulfilled value
-     * @param onNone Handler for onrejected value
-     * @return Result object which inclose new value
-     */
-    bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never>(
         onSuccess?: ( value: T ) => TResult1 | IResult<TResult1, EResult1>,
         onFailure?: ( reason: E ) => EResult2 | IResult<TResult2, EResult2>
     ): Result<TResult1 | TResult2, EResult1 | EResult2>
@@ -146,14 +135,7 @@ class CSuccess<T, E extends Throwable> extends CJustSuccess<T, E> implements IRe
         onSuccess?: ( value: T ) => TResult1 | IResult<TResult1, EResult1>,
         onFailure?: ( reason: E ) => EResult2 | IResult<TResult2, EResult2>
     ): Result<TResult1 | TResult2, EResult1 | EResult2> {
-        throw new Error( bindErrorMsg )
-    }
-
-    bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never>(
-        onSuccess?: ( value: T ) => TResult1 | Result<TResult1, EResult1>,
-        onFailure?: ( reason: E ) => EResult2 | Result<TResult2, EResult2>
-    ): Result<TResult1 | TResult2, EResult1 | EResult2> {
-        return this.then( onSuccess, onFailure )
+        throw new Error( thenErrorMsg )
     }
 
     isFailure(): this is Failure<T, E> {
@@ -181,15 +163,7 @@ class CFailure<T, E extends Throwable> extends CNoneFailure<T, E> implements IRe
         onSuccess?: ( value: T ) => TResult1 | IResult<TResult1, EResult1>,
         onFailure?: ( reason: E ) => EResult2 | IResult<TResult2, EResult2>
     ): Result<TResult1 | TResult2, EResult1 | EResult2> {
-        throw new Error( bindErrorMsg )
-    }
-
-
-    bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never>(
-        onSuccess?: ( value: T ) => TResult1 | Result<TResult1, EResult1>,
-        onFailure?: ( reason: E ) => EResult2 | Result<TResult2, EResult2>
-    ): Result<TResult1 | TResult2, EResult1 | EResult2> {
-        return this.then( onSuccess, onFailure )
+        throw new Error( thenErrorMsg )
     }
 
     isFailure(): this is Failure<T, E> {

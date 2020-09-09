@@ -2,7 +2,7 @@
 import { CJustSuccess, CNoneFailure, fulfilled, rejected } from "./monad"
 import { Thenable } from './thenable'
 
-const bindErrorMsg = "Maybe.bind() is should be full filled by monad decorator."
+const thenErrorMsg = "Maybe.then() is should be full filled by monad decorator."
 
 /**
  * Define properties specific to Maybe monad
@@ -27,17 +27,6 @@ interface IMaybe<T> extends Thenable<T> {
      * @return Maybe object which inclose new value
      */
     then<TResult1 = T, TResult2 = never>(
-        onJust?: ( ( value: T ) => TResult1 | IMaybe<TResult1> | void ),
-        onNone?: ( () => IMaybe<TResult2> | void )
-    ): Maybe<TResult1 | TResult2>
-    /**
-     * Accordingly apply the handlers produces a new Maybe as container for the output of called function
-     * @deprecated
-     * @param onJust Handler for fulfilled value
-     * @param onNone Handler for onrejected value
-     * @return Maybe object which inclose new value
-     */
-    bind<TResult1 = T, TResult2 = never>(
         onJust?: ( ( value: T ) => TResult1 | IMaybe<TResult1> | void ),
         onNone?: ( () => IMaybe<TResult2> | void )
     ): Maybe<TResult1 | TResult2>
@@ -121,15 +110,7 @@ class CJust<T> extends CJustSuccess<T, undefined> implements IMaybe<T> {
         onJust?: ( value: T ) => TResult1 | Maybe<TResult1>,
         onNone?: () => Maybe<TResult2>
     ): Maybe<TResult1 | TResult2> {
-        throw new Error( bindErrorMsg )
-    }
-
-    @fulfilled<T>( isMaybe )
-    bind<TResult1 = T, TResult2 = never>(
-        onJust?: ( value: T ) => TResult1 | Maybe<TResult1>,
-        onNone?: () => Maybe<TResult2>
-    ): Maybe<TResult1 | TResult2> {
-        return this.then( onJust, onNone )
+        throw new Error( thenErrorMsg )
     }
 
     isNone(): this is None<T> {
@@ -154,14 +135,7 @@ class CNone<T> extends CNoneFailure<T, undefined> implements IMaybe<T> {
         onJust?: ( value: T ) => TResult1 | Maybe<TResult1>,
         onNone?: () => Maybe<TResult2>
     ): Maybe<TResult1 | TResult2> {
-        throw new Error( bindErrorMsg )
-    }
-
-    bind<TResult1 = T, TResult2 = never>(
-        onJust?: ( value: T ) => TResult1 | Maybe<TResult1>,
-        onNone?: () => Maybe<TResult2>
-    ): Maybe<TResult1 | TResult2> {
-        return this.then( onJust, onNone )
+        throw new Error( thenErrorMsg )
     }
 
     isNone(): this is None<T> {

@@ -1,7 +1,5 @@
 import { Thenable, isThenable } from './thenable'
 
-const bindErrorMsg = "Maybe.bind() is should be full filled by monad decorator."
-
 /**
  * Container of with a fallback value
  */
