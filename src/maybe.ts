@@ -7,11 +7,32 @@ const bindErrorMsg = "Maybe.bind() is should be full filled by monad decorator."
 /**
  * Define properties specific to Maybe monad
  *
- * @note Bind is not defined, since it is attached by decorator
+ * @note then() is not defined, since it is attached by decorator
  */
 interface IMaybe<T> extends Thenable<T> {
     /**
+     * Implementation of PromiseLike.then() for proper functioning of await
+     * @param onfulfilled Handler for fulfilled value
+     * @param onrejected Handler for onrejected value
+     * @return PromiseLike object which inclose new value
+     */
+    then<TResult1 = T, TResult2 = never>(
+        onfulfilled?: ( ( value: T ) => TResult1 | PromiseLike<TResult1> ) | undefined | null,
+        onrejected?: ( ( reason: any ) => TResult2 | PromiseLike<TResult2> ) | undefined | null
+    ): PromiseLike<TResult1 | TResult2>
+    /**
      * Accordingly apply the handlers produces a new Maybe as container for the output of called function
+     * @param onJust Handler for fulfilled value
+     * @param onNone Handler for onrejected value
+     * @return Maybe object which inclose new value
+     */
+    then<TResult1 = T, TResult2 = never>(
+        onJust?: ( ( value: T ) => TResult1 | IMaybe<TResult1> | void ),
+        onNone?: ( () => IMaybe<TResult2> | void )
+    ): Maybe<TResult1 | TResult2>
+    /**
+     * Accordingly apply the handlers produces a new Maybe as container for the output of called function
+     * @deprecated
      * @param onJust Handler for fulfilled value
      * @param onNone Handler for onrejected value
      * @return Maybe object which inclose new value
@@ -96,11 +117,19 @@ export const Maybe = <T>( value: T | undefined | null ): Maybe<T> =>
 class CJust<T> extends CJustSuccess<T, undefined> implements IMaybe<T> {
 
     @fulfilled<T>( isMaybe )
-    bind<TResult1 = T, TResult2 = never>(
+    then<TResult1 = T, TResult2 = never>(
         onJust?: ( value: T ) => TResult1 | Maybe<TResult1>,
         onNone?: () => Maybe<TResult2>
     ): Maybe<TResult1 | TResult2> {
         throw new Error( bindErrorMsg )
+    }
+
+    @fulfilled<T>( isMaybe )
+    bind<TResult1 = T, TResult2 = never>(
+        onJust?: ( value: T ) => TResult1 | Maybe<TResult1>,
+        onNone?: () => Maybe<TResult2>
+    ): Maybe<TResult1 | TResult2> {
+        return this.then( onJust, onNone )
     }
 
     isNone(): this is None<T> {
@@ -121,11 +150,18 @@ class CNone<T> extends CNoneFailure<T, undefined> implements IMaybe<T> {
     }
 
     @rejected<T>( isMaybe )
-    bind<TResult1 = T, TResult2 = never>(
+    then<TResult1 = T, TResult2 = never>(
         onJust?: ( value: T ) => TResult1 | Maybe<TResult1>,
         onNone?: () => Maybe<TResult2>
     ): Maybe<TResult1 | TResult2> {
         throw new Error( bindErrorMsg )
+    }
+
+    bind<TResult1 = T, TResult2 = never>(
+        onJust?: ( value: T ) => TResult1 | Maybe<TResult1>,
+        onNone?: () => Maybe<TResult2>
+    ): Maybe<TResult1 | TResult2> {
+        return this.then( onJust, onNone )
     }
 
     isNone(): this is None<T> {
@@ -134,6 +170,12 @@ class CNone<T> extends CNoneFailure<T, undefined> implements IMaybe<T> {
 
     isJust(): this is Just<T> {
         return false
+    }
+
+    getOrThrow(): T {
+        // override default behavior since
+        // 'undefined' should not be thrown
+        throw "The value is None"
     }
 }
 

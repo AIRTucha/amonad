@@ -85,7 +85,7 @@ describe( "Maybe", () => {
             } )
         } )
 
-        describe( "bind()", () => {
+        describe( "then()", () => {
             let monad!: Maybe<number>
 
             beforeEach( () => {
@@ -96,14 +96,14 @@ describe( "Maybe", () => {
 
                 it( 'value of the same type', () => {
                     const result = monad
-                        .bind( mapNumbersToNumber )
+                        .then( mapNumbersToNumber )
                     assertIsJust( result )
                     return assertFulfilledMapNumberToNumber( result )
                 } )
 
                 it( 'value of a different type', () => {
                     const result = monad
-                        .bind( mapNumberToString )
+                        .then( mapNumberToString )
                     assertIsJust( result )
                     return assertFulfilledMapNumberToString( result )
                 } )
@@ -111,21 +111,21 @@ describe( "Maybe", () => {
                 describe( "monad of", () => {
                     it( 'the same type', () => {
                         const result = monad
-                            .bind<string>( value => Just( mapNumberToString( value ) ) )
+                            .then<string>( value => Just( mapNumberToString( value ) ) )
                         assertIsJust( result )
                         return assertFulfilledMapNumberToString( result )
                     } )
 
                     it( 'an opposite type', () => {
                         const result = monad
-                            .bind<string>( value => None<string>() )
+                            .then<string>( value => None<string>() )
                         assertIsNone( result )
                         return assertRejectedMapNumberToString( result )
                     } )
 
                     it( 'an different type', async () => {
                         const result = monad
-                            .bind( value => Promise.resolve( mapNumberToString( value ) ) )
+                            .then( value => Promise.resolve( mapNumberToString( value ) ) )
                         assertIsJust( result )
                         const promise = await result
                         const maybe = await promise
@@ -139,7 +139,7 @@ describe( "Maybe", () => {
                 describe( "monad of", () => {
                     it( 'the same type', () => {
                         const result = monad
-                            .bind<number, number>(
+                            .then<number, number>(
                                 undefined,
                                 () => Just( testNumber2 )
                             )
@@ -148,7 +148,7 @@ describe( "Maybe", () => {
 
                     it( 'an opposite type', () => {
                         const result = monad
-                            .bind<number, number>(
+                            .then<number, number>(
                                 undefined,
                                 () => None<number>()
                             )
@@ -196,7 +196,7 @@ describe( "Maybe", () => {
             } )
         } )
 
-        describe( "bind()", () => {
+        describe( "then()", () => {
             let monad: Maybe<number>
 
             beforeEach( () => {
@@ -207,13 +207,13 @@ describe( "Maybe", () => {
 
                 it( 'value of the same type', () => {
                     const result = monad
-                        .bind( mapNumbersToNumber )
+                        .then( mapNumbersToNumber )
                     assertIgnoreOnFullfil( result )
                 } )
 
                 it( 'value of a different type', () => {
                     const result = monad
-                        .bind( mapNumberToString )
+                        .then( mapNumberToString )
                     assertIgnoreOnFullfil( result as any )
                 } )
 
@@ -221,19 +221,19 @@ describe( "Maybe", () => {
 
                     it( 'the same type', () => {
                         const result = monad
-                            .bind<number>( value => None<number>() )
+                            .then<number>( value => None<number>() )
                         assertIgnoreOnFullfil( result )
                     } )
 
                     it( 'an opposite type', () => {
                         const result = monad
-                            .bind<number>( value => Just( mapNumbersToNumber( value ) ) )
+                            .then<number>( value => Just( mapNumbersToNumber( value ) ) )
                         assertIgnoreOnFullfil( result )
                     } )
 
                     it( 'an different type', () => {
                         const result = monad
-                            .bind( value => Promise.resolve( mapNumbersToNumber( value ) ) )
+                            .then( value => Promise.resolve( mapNumbersToNumber( value ) ) )
                         assertIgnoreOnFullfil( result as any )
                     } )
                 } )
@@ -244,7 +244,7 @@ describe( "Maybe", () => {
                 describe( "monad of", () => {
                     it( 'the same monad', () => {
                         const result = monad
-                            .bind<number, number>(
+                            .then<number, number>(
                                 undefined,
                                 () => None<number>()
                             )
@@ -254,7 +254,7 @@ describe( "Maybe", () => {
 
                     it( 'an opposite monad', () => {
                         const result = monad
-                            .bind<number, number>(
+                            .then<number, number>(
                                 undefined,
                                 () => Just( mapNumbersToNumber( testNumber1 ) )
                             )
@@ -315,6 +315,144 @@ describe( "Maybe", () => {
 
             it( "Failure", () => {
                 expect( isMaybe( Failure( "" ) ) ).to.be.false
+            } )
+        } )
+    } )
+
+    describe( "await", () => {
+        describe( "Just", () => {
+
+            it( "function correctly", async () => {
+                const value = await Just( testNumber1 )
+                expect( value ).to.be.eql( testNumber1 )
+            } )
+
+            it( "with None", async () => {
+                try {
+                    const svalue = await Just( testNumber1 )
+                    const fvalue = await None()
+                    throw "The line should not be reached"
+                } catch ( e ) {
+                    expect( e ).to.be.eql( undefined )
+                }
+            } )
+
+            it( 'getOrThrow() throw correct error', () => {
+                const error = new Error( testString1 )
+                expect(
+                    () => None().getOrThrow()
+                ).to.throws( "The value is None" )
+            } )
+
+            describe( "Promise", () => {
+                describe( "resolved", () => {
+
+                    it( "before", async () => {
+                        const pValue = await Promise.resolve( testNumber1 )
+                        const value = await Just( testNumber2 )
+                        expect( pValue ).to.be.eql( testNumber1 )
+                        expect( value ).to.be.eql( testNumber2 )
+                    } )
+
+                    it( "after", async () => {
+                        const value = await Just( testNumber2 )
+                        const pValue = await Promise.resolve( testNumber1 )
+                        expect( pValue ).to.be.eql( testNumber1 )
+                        expect( value ).to.be.eql( testNumber2 )
+                    } )
+                } )
+                describe( "rejected", () => {
+
+                    it( "before", async () => {
+                        try {
+                            const pValue = await Promise.reject( testNumber1 )
+                            const value = await Just( testNumber2 )
+                            throw "The line should not be reached"
+                        } catch ( e ) {
+                            expect( e ).to.be.eql( testNumber1 )
+                        }
+                    } )
+
+                    it( "after", async () => {
+                        try {
+                            const value = await Just( testString1 )
+                            const pValue = await Promise.reject( testNumber1 )
+                            throw "The line should not be reached"
+                        } catch ( e ) {
+                            expect( e ).to.be.eql( testNumber1 )
+                        }
+                    } )
+                } )
+            } )
+
+        } )
+
+        describe( "None", () => {
+
+            it( "throws value", async () => {
+                try {
+                    await None()
+                    throw "The line should not be reached"
+                } catch ( e ) {
+                    expect( e ).to.be.eql( undefined )
+                }
+            } )
+
+            it( "with Just", async () => {
+                try {
+                    const fvalue = await None()
+                    const svalue = await Just( testNumber1 )
+                    throw "The line should not be reached"
+                } catch ( e ) {
+                    expect( e ).to.be.eql( undefined )
+                }
+            } )
+
+            describe( "Promise", () => {
+                describe( "resolved", () => {
+
+                    it( "before", async () => {
+                        try {
+                            const value = await None()
+                            const pValue = await Promise.resolve( testNumber1 )
+                            throw "The line should not be reached"
+                        } catch ( e ) {
+                            expect( e ).to.be.eql( undefined )
+                        }
+                    } )
+
+                    it( "after", async () => {
+                        try {
+                            const pValue = await Promise.resolve( testNumber1 )
+                            const value = await None()
+                            throw "The line should not be reached"
+                        } catch ( e ) {
+                            expect( e ).to.be.eql( undefined )
+                        }
+                    } )
+                } )
+                describe( "rejected", () => {
+
+                    it( "before", async () => {
+                        try {
+                            const pValue = await Promise.reject( testNumber1 )
+                            const value = await None()
+                            throw "The line should not be reached"
+                        } catch ( e ) {
+                            expect( e ).to.be.eql( testNumber1 )
+                        }
+                    } )
+
+                    it( "after", async () => {
+                        try {
+                            const value = await None()
+                            const pValue = await Promise.reject( testNumber1 )
+                            throw "The line should not be reached"
+                        } catch ( e ) {
+                            expect( e ).to.be.eql( undefined )
+                        }
+                    } )
+                } )
             } )
         } )
     } )

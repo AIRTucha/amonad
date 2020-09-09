@@ -15,7 +15,28 @@ export type Throwable = Error | string
  */
 interface IResult<T, E extends Throwable> extends Thenable<T> {
     /**
+     * Implementation of PromiseLike.then() for proper functioning of await
+     * @param onfulfilled Handler for fulfilled value
+     * @param onrejected Handler for onrejected value
+     * @return PromiseLike object which inclose new value
+     */
+    then<TResult1 = T, TResult2 = never>(
+        onfulfilled?: ( ( value: T ) => TResult1 | PromiseLike<TResult1> ) | undefined | null,
+        onrejected?: ( ( reason: any ) => TResult2 | PromiseLike<TResult2> ) | undefined | null
+    ): PromiseLike<TResult1 | TResult2>
+    /**
      * Accordingly apply the handlers produces a new Result as container for produced output
+     * @param onJust Handler for fulfilled value
+     * @param onNone Handler for onrejected value
+     * @return Result object which inclose new value
+     */
+    then<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never>(
+        onSuccess?: ( value: T ) => TResult1 | IResult<TResult1, EResult1>,
+        onFailure?: ( reason: E ) => EResult2 | IResult<TResult2, EResult2>
+    ): Result<TResult1 | TResult2, EResult1 | EResult2>
+    /**
+     * Accordingly apply the handlers produces a new Result as container for produced output
+     * @deprecated
      * @param onJust Handler for fulfilled value
      * @param onNone Handler for onrejected value
      * @return Result object which inclose new value
@@ -114,12 +135,25 @@ export const isSuccess =
  */
 class CSuccess<T, E extends Throwable> extends CJustSuccess<T, E> implements IResult<T, E> {
 
+    /**
+     * Implementation of PromiseLike.then() for proper functioning of await
+     * @param onfulfilled Handler for fulfilled value
+     * @param onrejected Handler for onrejected value
+     * @return PromiseLike object which inclose new value
+     */
     @fulfilled<T>( isResult )
+    then<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never>(
+        onSuccess?: ( value: T ) => TResult1 | IResult<TResult1, EResult1>,
+        onFailure?: ( reason: E ) => EResult2 | IResult<TResult2, EResult2>
+    ): Result<TResult1 | TResult2, EResult1 | EResult2> {
+        throw new Error( bindErrorMsg )
+    }
+
     bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never>(
         onSuccess?: ( value: T ) => TResult1 | Result<TResult1, EResult1>,
         onFailure?: ( reason: E ) => EResult2 | Result<TResult2, EResult2>
     ): Result<TResult1 | TResult2, EResult1 | EResult2> {
-        throw new Error( bindErrorMsg )
+        return this.then( onSuccess, onFailure )
     }
 
     isFailure(): this is Failure<T, E> {
@@ -136,12 +170,26 @@ class CSuccess<T, E extends Throwable> extends CJustSuccess<T, E> implements IRe
  */
 class CFailure<T, E extends Throwable> extends CNoneFailure<T, E> implements IResult<T, E> {
 
+    /**
+     * Implementation of PromiseLike.then() for proper functioning of await
+     * @param onfulfilled Handler for fulfilled value
+     * @param onrejected Handler for onrejected value
+     * @return PromiseLike object which inclose new value
+     */
     @rejected<T>( isResult )
+    then<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never>(
+        onSuccess?: ( value: T ) => TResult1 | IResult<TResult1, EResult1>,
+        onFailure?: ( reason: E ) => EResult2 | IResult<TResult2, EResult2>
+    ): Result<TResult1 | TResult2, EResult1 | EResult2> {
+        throw new Error( bindErrorMsg )
+    }
+
+
     bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never>(
         onSuccess?: ( value: T ) => TResult1 | Result<TResult1, EResult1>,
         onFailure?: ( reason: E ) => EResult2 | Result<TResult2, EResult2>
     ): Result<TResult1 | TResult2, EResult1 | EResult2> {
-        throw new Error( bindErrorMsg )
+        return this.then( onSuccess, onFailure )
     }
 
     isFailure(): this is Failure<T, E> {

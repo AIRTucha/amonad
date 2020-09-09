@@ -59,19 +59,11 @@ export function rejected<T>( isMonad: ( value: any ) => boolean ) {
 /**
  * Container which might represent primary value, base for Just and Success
  */
-export class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> {
+export class CJustSuccess<T, E> {
     /**
      * @param v Primary stored value
      */
     constructor( private v: T ) { }
-
-    @fulfilled<T>( isThenable )
-    then<TResult1 = T, TResult2 = never>(
-        onfulfilled?: ( ( value: T ) => TResult1 | Thenable<TResult1> ) | undefined | null,
-        onrejected?: ( ( reason: any ) => TResult2 | Thenable<TResult2> ) | undefined | null
-    ): Thenable<TResult1 | TResult2> {
-        throw new Error( bindErrorMsg )
-    }
 
     get(): T {
         return this.v
@@ -89,19 +81,11 @@ export class CJustSuccess<T, E> implements Thenable<T>, Gettable<T, E> {
 /**
  * Container which might represent secondary value, base for None and Failure
  */
-export class CNoneFailure<T, E> implements Thenable<T>, Gettable<T, E> {
+export class CNoneFailure<T, E> {
     /**
      * @param v Secondary stored value
      */
     constructor( protected v: E ) { }
-
-    @rejected<T>( isThenable )
-    then<TResult1 = T, TResult2 = never>(
-        onfulfilled?: ( ( value: T ) => TResult1 | Thenable<TResult1> ) | undefined | null,
-        onrejected?: ( ( reason: any ) => TResult2 | Thenable<TResult2> ) | undefined | null
-    ): Thenable<TResult1 | TResult2> {
-        throw new Error( bindErrorMsg )
-    }
 
     getOrElse( value: T ): T {
         return value
@@ -112,6 +96,7 @@ export class CNoneFailure<T, E> implements Thenable<T>, Gettable<T, E> {
     }
 
     getOrThrow(): T {
+        this.v
         throw this.v
     }
 }

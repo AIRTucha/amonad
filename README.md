@@ -15,7 +15,7 @@ The package is available via *npm*. It has to be installed as a local dependency
 
 Each of them can be represented by values of two types: *Just* and *None* for *Maybe*, *Success* and *Failure* for *Result*. The values have dedicated factory functions with correspondent names. They can also be created by a *smart factories* which are just *Maybe* and *Result*. They correctly create the monads based on the provided argument.
 
-A primary way to access inclosed values is *bind()* method. It expects two optional arguments which are represented by functions which perform operations over the internal state of the containers. The first one processes the data, and the second is used for handling of its absents.
+A primary way to access inclosed values is *then()* method. It expects two optional arguments which are represented by functions which perform operations over the internal state of the containers. The first one processes the data, and the second is used for handling of its absents.
 
 Also, there is an API for checking of an object type. It consist of *isMaybe*, *isJust*, *isNone*, *isResult*, *isSuccess* and *isFailure* functions which accept any object as an argument and returns result of the assertion as boolean value. Moreover, there are *isJust* and *isNone* methods for *Maybe*. Correspondingly, there are *isSuccess* and *isFailure* methods for *Result*. 
 
@@ -61,7 +61,7 @@ class ResultExample {
   }
 
   calculateSomethingBasedOnValue(){
-    return this.value.bind( value =>
+    return this.value.then( value =>
         someValueBasedComputation( value, otherArgs)
      )
   }
@@ -111,16 +111,16 @@ const data = Result( () => JSON.parse(inputStr) )
 
 ### Data handling
 
-The first argument of *bind()* method is handler responsible for processing of expected value. It accepts two kinds of output values: value of arbitrary, *monad* of the same type.
+The first argument of *then()* method is handler responsible for processing of expected value. It accepts two kinds of output values: value of arbitrary, *monad* of the same type.
 ```typescript 
 // converts number value to string
 const eNumberStr: Maybe<string> = Just(2.7182818284)
-    .bind( 
+    .then( 
         eNumber => `E number is: ${eNumber}` 
     )
 // checks if string is valid and turns the monad to None if not
 const validValue = Just<string>(inputStr)
-    .bind( str => 
+    .then( str => 
         isValid(inputStr) ?
             str
             :
@@ -159,18 +159,18 @@ const someStrangeMeaninglessComputations = async (num1: number, num2: number, nu
 
 ### Error handling 
 
-The second argument of the *bind()* method is a callback responsible for the handling of unexpected behavior. It works a bit differently for *Result* and *Maybe*. *None* has no value, that's why its callback doesn't have an argument. Additionally, it doesn't accept mapping to the value, since it should produce another *None* which also cannot contain any data. But returning of Just might be utilized to recovery *Maybe*. It is also possible to pass a void procedure to perform some side effect, for example, logging. *Failure* oriented handler works a bit more similar to the first one. It accepts two kinds of output values: the value of Throwable and *monad* of the *Result* type.
+The second argument of the *then()* method is a callback responsible for the handling of unexpected behavior. It works a bit differently for *Result* and *Maybe*. *None* has no value, that's why its callback doesn't have an argument. Additionally, it doesn't accept mapping to the value, since it should produce another *None* which also cannot contain any data. But returning of Just might be utilized to recovery *Maybe*. It is also possible to pass a void procedure to perform some side effect, for example, logging. *Failure* oriented handler works a bit more similar to the first one. It accepts two kinds of output values: the value of Throwable and *monad* of the *Result* type.
 
 ```typescript 
 // tries to divide number e by n, recoveries to Infinity if division is not possible
 const eDividedByN: Failure<string, string> = divide(2.7182818284, n)
-    .bind( 
+    .then( 
         eNumber => `E number divided by n is: ${eNumber}`,
         error => Success(Infinity)
     )
 // looks up color from a dictionary by key, if color is not available falls back to black
 const valueFrom = colorDictionary.get(key)
-    .bind( 
+    .then( 
         undefined,
         () => Just("#000000")
     )
@@ -216,14 +216,14 @@ The interfaces contains an up to a certain degree shared API as well as specific
 
 ### Commune
 
-#### Monad.prototype.bind()
+#### Monad.prototype.then()
 
 Accordingly, applying the handlers produces a new Monadic as a container for the output of called function
 
 Signature for *Maybe* is:
 
 ```typescript
-Maybe<T>.prototype.bind<TResult1 = T, TResult2 = never>(
+Maybe<T>.prototype.then<TResult1 = T, TResult2 = never>(
     onJust?: (value: T) => TResult1 | Maybe<TResult1>,
     onNone?: () => Maybe<TResult2>
 ): Maybe<TResult1 | TResult2> 
@@ -232,27 +232,10 @@ Maybe<T>.prototype.bind<TResult1 = T, TResult2 = never>(
 Signature for *Result* is:
 
 ```typescript
-Result<T, E>.prototype.bind<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
+Result<T, E>.prototype.then<TResult1 = T, EResult1 extends Throwable = E, TResult2 = never, EResult2 extends Throwable = never >(
     onSuccess?: (value: T) => TResult1 | IResult<TResult1, EResult1>,
     onFailure?: (reason: E) => EResult2 | IResult<TResult2, EResult2>
 ): Result<TResult1 | TResult2, EResult1 | EResult2>
-```
-
-#### Monad.prototype.then()
-
-Implementation of PromiseLike.then() for the proper functioning of await
-
-**param** *onfulfilled* Handler for fulfilled value
-
-**param** *onrejected* Handler for onrejected value
-
-**return** *PromiseLike* object which inclose new value
-     
-```typescript
-Monad<T, E>.prototype.then<TResult1 = T, TResult2 = never>(
-    onfulfilled?: ( ( value: T ) => TResult1 | PromiseLike<TResult1> ) | undefined | null,
-    onrejected?: ( ( reason: any ) => TResult2 | PromiseLike<TResult2> ) | undefined | null
-): PromiseLike<TResult1 | TResult2>
 ```
 
 #### Monad.prototype.get()

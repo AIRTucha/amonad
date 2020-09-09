@@ -1,5 +1,3 @@
-import { type } from "os"
-
 export interface Thenable<T> extends PromiseLike<T> {
     /**
      * Implementation of PromiseLike.then() for proper functioning of await
